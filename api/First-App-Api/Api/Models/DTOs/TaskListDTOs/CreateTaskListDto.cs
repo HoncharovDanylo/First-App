@@ -1,12 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+namespace Api.Models.DTOs.TaskListDTOs;
 
-namespace Api.Models;
-
-public class TaskList : BaseEntity
+public class CreateTaskListDto
 {
     [Required]
     [Length(5,100)]
-    
     public string Name { get; set; }
-    public List<Card> Cards { get; set; }
 }
