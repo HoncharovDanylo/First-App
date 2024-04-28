@@ -36,6 +36,7 @@ namespace Api.Controllers
                 return NotFound();
             var history = await _dbContext.Histories.Where(h=>h.CardId == cardId).Select(history=>new HistoryDto()
             {
+                
                 Action = history.Action,
                 CardName = history.CardTitle,
                 Field = history.Field,
