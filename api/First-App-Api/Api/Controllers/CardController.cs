@@ -13,12 +13,10 @@ namespace Api.Controllers
     public class CardController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly IHistoryService _historyService;
 
-        public CardController(ApplicationDbContext dbContext, IHistoryService historyService)
+        public CardController(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
-            _historyService = historyService;
         }
             
         [HttpGet("/cards")]       
@@ -71,7 +69,6 @@ namespace Api.Controllers
                 };
                 await _dbContext.Cards.AddAsync(card);
                 await _dbContext.SaveChangesAsync();
-                // await _historyService.TrackCreation(card);
                 
                 return Ok();
                 
@@ -96,7 +93,6 @@ namespace Api.Controllers
                 card.TaskListId = updateDto.TaskListId;
                 card.Priority = updateDto.Priority.Trim();
                 await _dbContext.SaveChangesAsync();
-                // await _historyService.TrackUpdate(card, updateDto);
                 return Ok();
             }
             return BadRequest();
@@ -111,7 +107,6 @@ namespace Api.Controllers
                 return NotFound();
             _dbContext.Cards.Remove(card);
             await _dbContext.SaveChangesAsync();
-            // await _historyService.TrackDeletion(card);
             return Ok();
         }
         [HttpPut("/card/{cardId}/change-list/{taskListId}")]
@@ -124,7 +119,6 @@ namespace Api.Controllers
                 return NotFound();
             card.TaskListId = taskListId;
             await _dbContext.SaveChangesAsync();
-            // await _historyService.TrackMove(card, taskListId);
             return Ok();
         }
 

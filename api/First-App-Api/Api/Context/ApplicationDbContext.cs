@@ -8,9 +8,6 @@ namespace Api.Context;
 
 public class ApplicationDbContext : DbContext
 {
-    // [Inject]
-    // public IHistoryService HistoryService { get; set; }
-
     private readonly IHistoryService _historyService;
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHistoryService historyService) : base(options)
     {
@@ -53,9 +50,6 @@ public class ApplicationDbContext : DbContext
         }
         foreach (var entry in ChangeTracker.Entries().Where(entry => entry.Entity is Card && entry.State == EntityState.Deleted))
         {
-            // entry.State = EntityState.Modified;
-            // ((Card)entry.Entity).IsDeleted = true;
-            // ((Card)entry.Entity).TaskListId = null;
             histories.Add(_historyService.TrackDeletion((Card)entry.Entity));
         }
 
