@@ -2,10 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Api.Models.DTOs.CardDTOs;
 
-public class UpdateCardDto
+public class CreateUpdateCardDto
 {
-    [Required]
-    public int Id { get; set; }
     [Required]
     [Length(5,100)]
     public string Title { get; set; }

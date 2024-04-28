@@ -1,4 +1,5 @@
 using Api.Context;
+using Api.Interfaces;
 using Api.Models;
 using Api.Models.DTOs.CardDTOs;
 using Microsoft.AspNetCore.Http;
@@ -12,16 +13,18 @@ namespace Api.Controllers
     public class CardController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IHistoryService _historyService;
 
-        public CardController(ApplicationDbContext dbContext)
+        public CardController(ApplicationDbContext dbContext, IHistoryService historyService)
         {
             _dbContext = dbContext;
+            _historyService = historyService;
         }
             
         [HttpGet("/cards")]       
         public async Task<IActionResult> GetCards()
         {
-            var cards = await _dbContext.Cards.Include(x=>x.TaskList).Select(x=>new CardDto()
+            var cards = await _dbContext.Cards.Include(x=>x.TaskList).Where(card=>!card.IsDeleted).Select(x=>new CardDto()
             {
                 Id = x.Id,
                 Title = x.Title,
@@ -38,7 +41,7 @@ namespace Api.Controllers
         {
             if (id == null)
                 return NotFound();
-            var card = await _dbContext.Cards.Include(c=>c.TaskList).SingleOrDefaultAsync(card=>card.Id == id);
+            var card = await _dbContext.Cards.Include(c=>c.TaskList).Where(card=>!card.IsDeleted).SingleOrDefaultAsync(card=>card.Id == id);
             if (card == null)
                 return NotFound();
             var cardDto = new CardDto()
@@ -54,42 +57,46 @@ namespace Api.Controllers
             return Ok(cardDto);
         }
         [HttpPost("/cards/create")]
-        public async Task<IActionResult> CreateCard([FromBody] CreateCardDto cardDto)
+        public async Task<IActionResult> CreateCard([FromBody] CreateUpdateCardDto cardDto)
         {
             if (ModelState.IsValid)
             {
                 var card = new Card()
                 {
-                    Title = cardDto.Title,
-                    Description = cardDto.Description,
+                    Title = cardDto.Title.Trim(),
+                    Description = cardDto.Description.Trim(),
                     DueDate = cardDto.DueDate,
                     TaskListId = cardDto.TaskListId,
-                    Priority = cardDto.Priority
+                    Priority = cardDto.Priority.Trim()
                 };
                 await _dbContext.Cards.AddAsync(card);
                 await _dbContext.SaveChangesAsync();
+                await _historyService.TrackCreation(card);
+                
                 return Ok();
+                
             }
 
-            return BadRequest();
+            return BadRequest("valid error");
         }
 
         [HttpPatch("/cards/update/{id}")]
-        public async Task<IActionResult> UpdateCard(int id, UpdateCardDto updateDto)
+        public async Task<IActionResult> UpdateCard(int id, CreateUpdateCardDto updateDto)
         {
             if (id == null)
                 return BadRequest();
             if (ModelState.IsValid)
             {
-                var card = await _dbContext.Cards.SingleOrDefaultAsync(card => card.Id == id); 
+                var card = await _dbContext.Cards.Where(card=>!card.IsDeleted).SingleOrDefaultAsync(card => card.Id == id); 
                 if (card == null)
                     return NotFound();
-                card.Title = updateDto.Title;
-                card.Description = updateDto.Description;
+                card.Title = updateDto.Title.Trim();
+                card.Description = updateDto.Description.Trim();
                 card.DueDate = updateDto.DueDate;
                 card.TaskListId = updateDto.TaskListId;
-                card.Priority = updateDto.Priority;
+                card.Priority = updateDto.Priority.Trim();
                 await _dbContext.SaveChangesAsync();
+                await _historyService.TrackUpdate(card, updateDto);
                 return Ok();
             }
             return BadRequest();
@@ -99,11 +106,25 @@ namespace Api.Controllers
         {
             if (id == null)
                 return NotFound();
-            var card = await _dbContext.Cards.SingleOrDefaultAsync(card=>card.Id == id);
+            var card = await _dbContext.Cards.Where(card=>!card.IsDeleted).SingleOrDefaultAsync(card=>card.Id == id);
             if (card == null)
                 return NotFound();
             _dbContext.Cards.Remove(card);
             await _dbContext.SaveChangesAsync();
+            await _historyService.TrackDeletion(card);
+            return Ok();
+        }
+        [HttpPut("/card/{cardId}/change-list/{taskListId}")]
+        public async Task<IActionResult> ChangeList(int cardId, int taskListId)
+        {
+            if (cardId == null)
+                return NotFound();
+            var card = await _dbContext.Cards.Where(card=>!card.IsDeleted).SingleOrDefaultAsync(card=>card.Id == cardId);
+            if (card == null)
+                return NotFound();
+            card.TaskListId = taskListId;
+            await _dbContext.SaveChangesAsync();
+            await _historyService.TrackMove(card, taskListId);
             return Ok();
         }
 

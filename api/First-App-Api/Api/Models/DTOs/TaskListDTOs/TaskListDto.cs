@@ -5,8 +5,7 @@ namespace Api.Models.DTOs.TaskListDTOs;
 
 public class TaskListDto
 {
-    [Required]
-    [Length(5,100)]
+    public int Id { get; set; }
     public string Name { get; set; }
     public int CardsCount { get; set; }
     public List<CardDto> Cards { get; set; }

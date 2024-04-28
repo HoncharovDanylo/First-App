@@ -23,7 +23,8 @@ namespace Api.Controllers
         {
             var taskLists = await _dbContext.TaskLists.Select(x=>new TaskListDto()
             {
-                Name = x.Name,
+                Id = x.Id,
+                Name = x.Name.Trim(),
                 Cards = x.Cards.Select(c=>new CardDto()
                 {
                     Id = c.Id,
@@ -31,10 +32,21 @@ namespace Api.Controllers
                     Description = c.Description,
                     DueDate = c.DueDate,
                     Priority = c.Priority,
+                    TaskListId = x.Id,
+                    TaskListName = x.Name
                 }).ToList(),
                 CardsCount = x.Cards.Count
             }).ToListAsync();
             return Ok(taskLists);
+        }
+
+        [HttpGet("list/movements/{id:int?}")]
+        public async Task<IActionResult> GetTaskListNames(int? id)
+        {
+            var taskList = _dbContext.TaskLists.Select(x=> new CardlessTaskListDto() { Id = x.Id, Name = x.Name });
+            if(id!=null)
+                taskList = taskList.Where(x=>x.Id != id);
+            return Ok(taskList);
         }
         [HttpGet("/lists/{id}")]
         public async Task<IActionResult> GetTaskList(int? id)
@@ -46,6 +58,7 @@ namespace Api.Controllers
                 return NotFound();
             var taskListDto = new TaskListDto()
             {
+                Id = taskList.Id,
                 Name = taskList.Name,
                 Cards = taskList.Cards.Select(c => new CardDto()
                 {
@@ -66,7 +79,7 @@ namespace Api.Controllers
             {
                 var taskList = new TaskList()
                 {
-                    Name = taskListDto.Name
+                    Name = taskListDto.Name.Trim()
                 };
                 await _dbContext.TaskLists.AddAsync(taskList);
                 await _dbContext.SaveChangesAsync();
@@ -74,7 +87,19 @@ namespace Api.Controllers
             }
             return BadRequest();
         }
-        [HttpDelete("/lists/delete/{id}")]
+        [HttpPut("lists/{id}")]
+        public async Task<IActionResult> UpdateTaskList(int? id, [FromBody] CreateTaskListDto taskListDto)
+        {
+            if (id == null)
+                return NotFound();
+            var taskList = await _dbContext.TaskLists.SingleOrDefaultAsync(tl=>tl.Id == id);
+            if (taskList == null)
+                return NotFound();
+            taskList.Name = taskListDto.Name.Trim();
+            await _dbContext.SaveChangesAsync();
+            return Ok();
+        }
+        [HttpDelete("/lists/{id}")]
         public async Task<IActionResult> DeleteTaskList(int? id)
         {
             if (id == null)
