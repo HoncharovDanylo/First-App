@@ -19,5 +19,4 @@ public class Card : BaseEntity
     [Required]
     public string Priority { get; set; }
     
-    public List<History> Histories { get; set; }
 }
