@@ -71,7 +71,7 @@ namespace Api.Controllers
                 };
                 await _dbContext.Cards.AddAsync(card);
                 await _dbContext.SaveChangesAsync();
-                await _historyService.TrackCreation(card);
+                // await _historyService.TrackCreation(card);
                 
                 return Ok();
                 
@@ -96,7 +96,7 @@ namespace Api.Controllers
                 card.TaskListId = updateDto.TaskListId;
                 card.Priority = updateDto.Priority.Trim();
                 await _dbContext.SaveChangesAsync();
-                await _historyService.TrackUpdate(card, updateDto);
+                // await _historyService.TrackUpdate(card, updateDto);
                 return Ok();
             }
             return BadRequest();
@@ -111,7 +111,7 @@ namespace Api.Controllers
                 return NotFound();
             _dbContext.Cards.Remove(card);
             await _dbContext.SaveChangesAsync();
-            await _historyService.TrackDeletion(card);
+            // await _historyService.TrackDeletion(card);
             return Ok();
         }
         [HttpPut("/card/{cardId}/change-list/{taskListId}")]
@@ -124,7 +124,7 @@ namespace Api.Controllers
                 return NotFound();
             card.TaskListId = taskListId;
             await _dbContext.SaveChangesAsync();
-            await _historyService.TrackMove(card, taskListId);
+            // await _historyService.TrackMove(card, taskListId);
             return Ok();
         }
 

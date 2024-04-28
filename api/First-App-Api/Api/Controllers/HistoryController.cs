@@ -18,10 +18,10 @@ namespace Api.Controllers
         [HttpGet("/history/{page}")]
         public async Task<IActionResult> GetHistory(int page)
         {
-            var history = await _dbContext.Histories.OrderByDescending(x=>x.Timestamp).Include(x=>x.Card).Skip((page-1)*20).Take(20).Select(x=>new HistoryDto()
+            var history = await _dbContext.Histories.OrderByDescending(x=>x.Timestamp).Skip((page-1)*20).Take(20).Select(x=>new HistoryDto()
             {
                 Action = x.Action,
-                CardName = x.Card.Title,
+                CardName = x.CardTitle,
                 Field = x.Field,
                 NewValue = x.NewValue,
                 PreviousValue = x.PreviousValue,
@@ -34,18 +34,18 @@ namespace Api.Controllers
         {
             if (cardId == null)
                 return NotFound();
-            var history = await _dbContext.Histories.Include(x=>x.Card).SingleOrDefaultAsync(h=>h.CardId == cardId);
-            if (history == null)
-                return NotFound();
-            return Ok(new HistoryDto()
+            var history = await _dbContext.Histories.Where(h=>h.CardId == cardId).Select(history=>new HistoryDto()
             {
                 Action = history.Action,
-                CardName = history.Card.Title,
+                CardName = history.CardTitle,
                 Field = history.Field,
                 NewValue = history.NewValue,
                 PreviousValue = history.PreviousValue,
                 Timestamp = history.Timestamp
-            });
+            }).ToListAsync();
+            if (history == null)
+                return NotFound();
+            return Ok();
         }
     }
 }

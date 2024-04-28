@@ -8,14 +8,8 @@ namespace Api.Services;
 
 public class HistoryService : IHistoryService
 {
-    private readonly ApplicationDbContext _dbContext;
-
-    public HistoryService(ApplicationDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
     
-    public async Task TrackCreation(Card card)
+    public History TrackCreation(Card card)
     {
         var history = new History()
         {
@@ -23,94 +17,90 @@ public class HistoryService : IHistoryService
             CardId = card.Id,
             Field = "Card",
             NewValue = card.Title,
-            Timestamp = DateTime.Now.ToUniversalTime(),
+            Timestamp = DateTime.UtcNow,
+            CardTitle = card.Title
         };
-        await _dbContext.Histories.AddAsync(history);
-        await _dbContext.SaveChangesAsync();
+        return history;
     }
 
-    public async Task TrackDeletion(Card card)
+    public History TrackDeletion(Card card)
     {
         var history = new History()
         {
             Action = "Delete",
             Field = "Card",
             PreviousValue = card.Title,
-            Timestamp = DateTime.Now.ToUniversalTime(),
+            Timestamp = DateTime.UtcNow,
+            CardId = card.Id,
+            CardTitle = card.Title
         };
-        await _dbContext.Histories.AddAsync(history);
-        await _dbContext.SaveChangesAsync();
+        return history;
     }
 
-    public async Task TrackUpdate(Card oldCard, CreateUpdateCardDto updatedCard)
+    public IEnumerable<History> TrackUpdate(Dictionary<string,object> oldValue, Dictionary<string,object> newValue)
     {
         var changes = new List<History>();
-        if(oldCard.Title != updatedCard.Title)
+        if(!oldValue["Title"].Equals(newValue["Title"]))
             changes.Add(new()
             {
                 Action = "Change",
                 Field = "Title",
-                PreviousValue = oldCard.Title,
-                NewValue = updatedCard.Title,
-                Timestamp = DateTime.Now.ToUniversalTime(),
-                CardId = oldCard.Id
+                PreviousValue = oldValue["Title"].ToString(),
+                NewValue = newValue["Title"].ToString(),
+                Timestamp = DateTime.UtcNow,
+                CardId = (int)oldValue["Id"],
+                CardTitle = newValue["Title"].ToString()
+
             });
-        if(oldCard.Description != updatedCard.Description)
+        if(!oldValue["Description"].Equals(newValue["Description"]))
             changes.Add(new()
             {
                 Action = "Change",
                 Field = "Description",
-                PreviousValue = oldCard.Description,
-                NewValue = updatedCard.Description,
-                Timestamp = DateTime.Now.ToUniversalTime(),
-                CardId = oldCard.Id
+                PreviousValue = oldValue["Description"].ToString(),
+                NewValue = newValue["Description"].ToString(),
+                Timestamp = DateTime.UtcNow,
+                CardId = (int)oldValue["Id"],
+                CardTitle = newValue["Title"].ToString()
+
             });
-        if(oldCard.DueDate != updatedCard.DueDate)
+        if(!oldValue["DueDate"].Equals(newValue["DueDate"]))
             changes.Add(new()
             {
                 Action = "Change",
                 Field = "Due Date",
-                PreviousValue = oldCard.DueDate.ToString(),
-                NewValue = updatedCard.DueDate.ToString(),
-                Timestamp = DateTime.Now.ToUniversalTime(),
-                CardId = oldCard.Id
+                PreviousValue = oldValue["DueDate"].ToString(),
+                NewValue = newValue["DueDate"].ToString(),
+                Timestamp = DateTime.UtcNow,
+                CardId = (int)oldValue["Id"],
+                CardTitle = newValue["Title"].ToString()
+
             });
-        if(oldCard.TaskListId != updatedCard.TaskListId)
+        if(!oldValue["TaskListId"].Equals(newValue["TaskListId"]))
             changes.Add(new()
             {
                 Action = "Change",
                 Field = "Task List",
-                PreviousValue = oldCard.TaskListId.ToString(),
-                NewValue = updatedCard.TaskListId.ToString(),
-                Timestamp = DateTime.Now,
-                CardId = oldCard.Id   
+                PreviousValue = oldValue["TaskListId"].ToString(),
+                NewValue = newValue["TaskListId"].ToString(),
+                Timestamp = DateTime.UtcNow,
+                CardId = (int)oldValue["Id"],
+                CardTitle = newValue["Title"].ToString()
+
             });
-        if(oldCard.Priority != updatedCard.Priority)
+        if(!oldValue["Priority"].Equals(newValue["Priority"]))
             changes.Add(new()
             {
                 Action = "Change",
                 Field = "Priority",
-                PreviousValue = oldCard.Priority,
-                NewValue = updatedCard.Priority,
-                Timestamp = DateTime.Now.ToUniversalTime(),
-                CardId = oldCard.Id 
+                PreviousValue = oldValue["Priority"].ToString(),
+                NewValue = newValue["Priority"].ToString(),
+                Timestamp = DateTime.UtcNow,
+                CardId = (int)oldValue["Id"],
+                CardTitle = newValue["Title"].ToString()
+
             });
-        await _dbContext.Histories.AddRangeAsync(changes);
-        await _dbContext.SaveChangesAsync();
+        return changes;
     }
 
-    public async Task TrackMove(Card card, int newTaskListId)
-    {
-        var history = new History()
-        {
-            Action = "Change",
-            Field = "Task List",
-            PreviousValue = card.TaskListId.ToString(),
-            NewValue = newTaskListId.ToString(),
-            Timestamp = DateTime.Now.ToUniversalTime(),
-            CardId = card.Id
-        };
-        await _dbContext.Histories.AddAsync(history);
-        await _dbContext.SaveChangesAsync();
-    }
 }

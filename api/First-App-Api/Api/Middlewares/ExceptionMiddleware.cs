@@ -21,9 +21,10 @@ public class ExceptionMiddleware
             await _requestDelegate(context);
         }
         catch (Exception exception)
-        {
-
+        { 
             await HandleExceptionAsync(context, exception);
+            if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+                throw;
         }
     }
 
