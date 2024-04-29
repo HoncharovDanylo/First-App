@@ -1,7 +1,11 @@
 using Api.Context;
 using Api.Interfaces;
 using Api.Middlewares;
+using Api.Models.DTOs.CardDTOs;
+using Api.Models.DTOs.TaskListDTOs;
 using Api.Services;
+using Api.Validations;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddTransient<IHistoryService, HistoryService>();
-
+builder.Services.AddScoped<IValidator<CreateUpdateCardDto>, CreateUpdateCardValidator>();
+builder.Services.AddScoped<IValidator<CreateTaskListDto>, CreateUpdateTaskListValidator>();
 
 
 builder.Services.AddSwaggerGen();
