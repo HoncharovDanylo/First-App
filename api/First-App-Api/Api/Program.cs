@@ -3,6 +3,7 @@ using Api.Interfaces;
 using Api.Middlewares;
 using Api.Models.DTOs.CardDTOs;
 using Api.Models.DTOs.TaskListDTOs;
+using Api.Repositories;
 using Api.Services;
 using Api.Validations;
 using FluentValidation;
@@ -14,9 +15,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddTransient<IHistoryService, HistoryService>();
 builder.Services.AddScoped<IValidator<CreateUpdateCardDto>, CreateUpdateCardValidator>();
 builder.Services.AddScoped<IValidator<CreateTaskListDto>, CreateUpdateTaskListValidator>();
+
+builder.Services.AddScoped<ICardRepository, CardRepository>(); 
+builder.Services.AddScoped<IHistoryRepository, HistoryRepository>();
+builder.Services.AddScoped<ITaskListRepository, TaskListRepository>();
+
+builder.Services.AddTransient<IHistoryService, HistoryService>();
 
 
 builder.Services.AddSwaggerGen();
