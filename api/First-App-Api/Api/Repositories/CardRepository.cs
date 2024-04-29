@@ -35,6 +35,7 @@ public class CardRepository : ICardRepository
     public async Task Update(Card card)
     {
         _dbContext.Entry(card).State = EntityState.Modified;
+        await _dbContext.SaveChangesAsync();
     }
     
 }

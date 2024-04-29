@@ -16,7 +16,7 @@ public class HistoryRepository : IHistoryRepository
     }
     public async Task<IEnumerable<History>> GetAll(int page)
     {
-        return  await _dbContext.Histories.OrderByDescending(x=>x.Timestamp).Skip((page-1) * 20).Take(20).ToListAsync();
+        return  (await _dbContext.Histories.OrderByDescending(x=>x.Timestamp).ToListAsync()).Skip((page-1) * 20).Take(20);
     }
 
     public async Task<IEnumerable<History>> GetByCardId(int cardId)
