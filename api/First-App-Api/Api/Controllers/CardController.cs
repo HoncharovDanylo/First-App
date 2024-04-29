@@ -2,6 +2,8 @@ using Api.Context;
 using Api.Interfaces;
 using Api.Models;
 using Api.Models.DTOs.CardDTOs;
+using Api.Validations;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +15,12 @@ namespace Api.Controllers
     public class CardController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IValidator<CreateUpdateCardDto> _validator;
 
-        public CardController(ApplicationDbContext dbContext)
+        public CardController(ApplicationDbContext dbContext, IValidator<CreateUpdateCardDto> validator)
         {
             _dbContext = dbContext;
+            _validator = validator;
         }
             
         [HttpGet("/cards")]       
@@ -57,7 +61,7 @@ namespace Api.Controllers
         [HttpPost("/cards/create")]
         public async Task<IActionResult> CreateCard([FromBody] CreateUpdateCardDto cardDto)
         {
-            if (ModelState.IsValid)
+            if ((await _validator.ValidateAsync(cardDto)).IsValid)
             {
                 var card = new Card()
                 {
@@ -82,7 +86,7 @@ namespace Api.Controllers
         {
             if (id == null)
                 return BadRequest();
-            if (ModelState.IsValid)
+            if ((await _validator.ValidateAsync(updateDto)).IsValid)
             {
                 var card = await _dbContext.Cards.Where(card=>!card.IsDeleted).SingleOrDefaultAsync(card => card.Id == id); 
                 if (card == null)

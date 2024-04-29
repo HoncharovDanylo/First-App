@@ -2,6 +2,7 @@ using Api.Context;
 using Api.Models;
 using Api.Models.DTOs.CardDTOs;
 using Api.Models.DTOs.TaskListDTOs;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +13,12 @@ namespace Api.Controllers
     public class TaskListController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IValidator<CreateTaskListDto> _validator;
 
-        public TaskListController(ApplicationDbContext dbContext)
+        public TaskListController(ApplicationDbContext dbContext, IValidator<CreateTaskListDto> validator)
         {
             _dbContext = dbContext;
+            _validator = validator;
         }
         
         [HttpGet("/lists")]
@@ -75,7 +78,7 @@ namespace Api.Controllers
         [HttpPost("/lists/create")]
         public async Task<IActionResult> CreateTaskList([FromBody] CreateTaskListDto taskListDto)
         {
-            if (ModelState.IsValid)
+            if ((await _validator.ValidateAsync(taskListDto)).IsValid)
             {
                 var taskList = new TaskList()
                 {
@@ -90,14 +93,21 @@ namespace Api.Controllers
         [HttpPut("lists/{id}")]
         public async Task<IActionResult> UpdateTaskList(int? id, [FromBody] CreateTaskListDto taskListDto)
         {
-            if (id == null)
-                return NotFound();
-            var taskList = await _dbContext.TaskLists.SingleOrDefaultAsync(tl=>tl.Id == id);
-            if (taskList == null)
-                return NotFound();
-            taskList.Name = taskListDto.Name.Trim();
-            await _dbContext.SaveChangesAsync();
-            return Ok();
+            if ((await _validator.ValidateAsync(taskListDto)).IsValid)
+            {
+
+
+                if (id == null)
+                    return NotFound();
+                var taskList = await _dbContext.TaskLists.SingleOrDefaultAsync(tl => tl.Id == id);
+                if (taskList == null)
+                    return NotFound();
+                taskList.Name = taskListDto.Name.Trim();
+                await _dbContext.SaveChangesAsync();
+                return Ok();
+            }
+
+            return BadRequest();
         }
         [HttpDelete("/lists/{id}")]
         public async Task<IActionResult> DeleteTaskList(int? id)
