@@ -16,8 +16,8 @@ public class ApplicationDbContext : DbContext
         
     }
 
-    public DbSet<Card?> Cards { get; set; }
-    public DbSet<TaskList?> TaskLists { get; set; }
+    public DbSet<Card> Cards { get; set; }
+    public DbSet<TaskList> TaskLists { get; set; }
     public DbSet<History> Histories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

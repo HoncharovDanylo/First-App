@@ -68,7 +68,7 @@ namespace Api.Controllers
             return BadRequest("valid error");
         }
 
-        [HttpPatch("/cards/update/{id}")]
+        [HttpPut("/cards/update/{id}")]
         public async Task<IActionResult> UpdateCard(int? id, CreateUpdateCardDto updateDto)
         {
             if (id == null)
@@ -101,7 +101,7 @@ namespace Api.Controllers
             await _cardRepository.Delete(card);
             return Ok();
         }
-        [HttpPut("/card/{cardId}/change-list/{taskListId}")]
+        [HttpPatch("/card/{cardId}/change-list/{taskListId}")]
         public async Task<IActionResult> ChangeList(int cardId, int taskListId)
         {
             var card = await _cardRepository.GetById(cardId);

@@ -1,4 +1,5 @@
 using Api.Context;
+using Api.Interfaces;
 using Api.Models.DTOs.HistoryDTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,16 +10,18 @@ namespace Api.Controllers
     public class HistoryController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IHistoryRepository _historyRepository;
         
-        public HistoryController(ApplicationDbContext dbContext)
+        public HistoryController(ApplicationDbContext dbContext, IHistoryRepository historyRepository)
         {
             _dbContext = dbContext;
+            _historyRepository = historyRepository;
         }
 
         [HttpGet("/history/{page}")]
         public async Task<IActionResult> GetHistory(int page)
         {
-            var history = await _dbContext.Histories.OrderByDescending(x=>x.Timestamp).Skip((page-1)*20).Take(20).Select(x=>new HistoryDto()
+            var history = (await _historyRepository.GetAll(page)).Select(x=>new HistoryDto()
             {
                 Action = x.Action,
                 CardName = x.CardTitle,
@@ -26,7 +29,7 @@ namespace Api.Controllers
                 NewValue = x.NewValue,
                 PreviousValue = x.PreviousValue,
                 Timestamp = x.Timestamp
-            }).ToListAsync();
+            });
             return Ok(history);
         }
         [HttpGet("/history/card/{cardId}")]
@@ -34,7 +37,7 @@ namespace Api.Controllers
         {
             if (cardId == null)
                 return NotFound();
-            var history = await _dbContext.Histories.Where(h=>h.CardId == cardId).Select(history=>new HistoryDto()
+            var history = (await _historyRepository.GetByCardId(cardId.Value)).Select(history=>new HistoryDto()
             {
                 
                 Action = history.Action,
@@ -43,7 +46,7 @@ namespace Api.Controllers
                 NewValue = history.NewValue,
                 PreviousValue = history.PreviousValue,
                 Timestamp = history.Timestamp
-            }).ToListAsync();
+            });
             if (history == null)
                 return NotFound();
             return Ok();
