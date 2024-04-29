@@ -1,4 +1,5 @@
 using Api.Context;
+using Api.Interfaces;
 using Api.Models;
 using Api.Models.DTOs.CardDTOs;
 using Api.Models.DTOs.TaskListDTOs;
@@ -14,21 +15,23 @@ namespace Api.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IValidator<CreateTaskListDto> _validator;
+        private readonly ITaskListRepository _taskListRepository;
 
-        public TaskListController(ApplicationDbContext dbContext, IValidator<CreateTaskListDto> validator)
+        public TaskListController(ApplicationDbContext dbContext, IValidator<CreateTaskListDto> validator, ITaskListRepository taskListRepository)
         {
             _dbContext = dbContext;
             _validator = validator;
+            _taskListRepository = taskListRepository;
         }
         
         [HttpGet("/lists")]
         public async Task<IActionResult> GetTaskLists()
         {
-            var taskLists = await _dbContext.TaskLists.Select(x=>new TaskListDto()
+            var taskLists = (await _taskListRepository.GetTaskLists()).Select(x => new TaskListDto()
             {
                 Id = x.Id,
                 Name = x.Name.Trim(),
-                Cards = x.Cards.Select(c=>new CardDto()
+                Cards = x.Cards.Select(c => new CardDto()
                 {
                     Id = c.Id,
                     Title = c.Title,
@@ -39,14 +42,14 @@ namespace Api.Controllers
                     TaskListName = x.Name
                 }).ToList(),
                 CardsCount = x.Cards.Count
-            }).ToListAsync();
+            });
             return Ok(taskLists);
         }
 
         [HttpGet("list/movements/{id:int?}")]
         public async Task<IActionResult> GetTaskListNames(int? id)
         {
-            var taskList = _dbContext.TaskLists.Select(x=> new CardlessTaskListDto() { Id = x.Id, Name = x.Name });
+            var taskList = (await _taskListRepository.GetTaskLists()).Select(x=> new CardlessTaskListDto() { Id = x.Id, Name = x.Name });
             if(id!=null)
                 taskList = taskList.Where(x=>x.Id != id);
             return Ok(taskList);
@@ -56,7 +59,7 @@ namespace Api.Controllers
         {
             if (id == null)
                 return NotFound();
-            var taskList = await _dbContext.TaskLists.Include(tl=>tl.Cards).SingleOrDefaultAsync(tl=>tl.Id == id);
+            var taskList = await _taskListRepository.GetById(id.Value);
             if (taskList == null)
                 return NotFound();
             var taskListDto = new TaskListDto()
@@ -84,8 +87,7 @@ namespace Api.Controllers
                 {
                     Name = taskListDto.Name.Trim()
                 };
-                await _dbContext.TaskLists.AddAsync(taskList);
-                await _dbContext.SaveChangesAsync();
+                await _taskListRepository.Create(taskList);
                 return Ok();
             }
             return BadRequest();
@@ -103,7 +105,7 @@ namespace Api.Controllers
                 if (taskList == null)
                     return NotFound();
                 taskList.Name = taskListDto.Name.Trim();
-                await _dbContext.SaveChangesAsync();
+                await _taskListRepository.Update(taskList);
                 return Ok();
             }
 
@@ -117,8 +119,7 @@ namespace Api.Controllers
             var taskList = await _dbContext.TaskLists.SingleOrDefaultAsync(tl=>tl.Id == id);
             if (taskList == null)
                 return NotFound();
-            _dbContext.TaskLists.Remove(taskList);
-            await _dbContext.SaveChangesAsync();
+            await _taskListRepository.Delete(taskList);
             return Ok();
         }
     }

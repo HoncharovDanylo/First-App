@@ -16,34 +16,22 @@ namespace Api.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IValidator<CreateUpdateCardDto> _validator;
+        private readonly ICardRepository _cardRepository;
 
-        public CardController(ApplicationDbContext dbContext, IValidator<CreateUpdateCardDto> validator)
+        public CardController(ApplicationDbContext dbContext, IValidator<CreateUpdateCardDto> validator, ICardRepository cardRepository)
         {
             _dbContext = dbContext;
             _validator = validator;
+            _cardRepository = cardRepository;
         }
             
-        [HttpGet("/cards")]       
-        public async Task<IActionResult> GetCards()
-        {
-            var cards = await _dbContext.Cards.Include(x=>x.TaskList).Where(card=>!card.IsDeleted).Select(x=>new CardDto()
-            {
-                Id = x.Id,
-                Title = x.Title,
-                Description = x.Description,
-                DueDate = x.DueDate,
-                TaskListName = x.TaskList.Name,
-                TaskListId = x.TaskList.Id,
-                Priority = x.Priority
-            }).ToListAsync();
-            return Ok(cards);
-        }
+        
         [HttpGet("/cards/{id}")]       
         public async Task<IActionResult> GetCard(int? id)
         {
             if (id == null)
                 return NotFound();
-            var card = await _dbContext.Cards.Include(c=>c.TaskList).Where(card=>!card.IsDeleted).SingleOrDefaultAsync(card=>card.Id == id);
+            var card = await _cardRepository.GetById(id.Value);
             if (card == null)
                 return NotFound();
             var cardDto = new CardDto()
@@ -71,8 +59,7 @@ namespace Api.Controllers
                     TaskListId = cardDto.TaskListId,
                     Priority = cardDto.Priority.Trim()
                 };
-                await _dbContext.Cards.AddAsync(card);
-                await _dbContext.SaveChangesAsync();
+                await _cardRepository.Create(card);
                 
                 return Ok();
                 
@@ -82,21 +69,23 @@ namespace Api.Controllers
         }
 
         [HttpPatch("/cards/update/{id}")]
-        public async Task<IActionResult> UpdateCard(int id, CreateUpdateCardDto updateDto)
+        public async Task<IActionResult> UpdateCard(int? id, CreateUpdateCardDto updateDto)
         {
             if (id == null)
                 return BadRequest();
             if ((await _validator.ValidateAsync(updateDto)).IsValid)
             {
-                var card = await _dbContext.Cards.Where(card=>!card.IsDeleted).SingleOrDefaultAsync(card => card.Id == id); 
+                var card = await _cardRepository.GetById(id.Value); 
                 if (card == null)
                     return NotFound();
+                
                 card.Title = updateDto.Title.Trim();
                 card.Description = updateDto.Description.Trim();
                 card.DueDate = updateDto.DueDate;
                 card.TaskListId = updateDto.TaskListId;
                 card.Priority = updateDto.Priority.Trim();
-                await _dbContext.SaveChangesAsync();
+                
+                await _cardRepository.Update(card);
                 return Ok();
             }
             return BadRequest();
@@ -106,23 +95,20 @@ namespace Api.Controllers
         {
             if (id == null)
                 return NotFound();
-            var card = await _dbContext.Cards.Where(card=>!card.IsDeleted).SingleOrDefaultAsync(card=>card.Id == id);
+            var card = await _cardRepository.GetById(id.Value);
             if (card == null)
                 return NotFound();
-            _dbContext.Cards.Remove(card);
-            await _dbContext.SaveChangesAsync();
+            await _cardRepository.Delete(card);
             return Ok();
         }
         [HttpPut("/card/{cardId}/change-list/{taskListId}")]
         public async Task<IActionResult> ChangeList(int cardId, int taskListId)
         {
-            if (cardId == null)
-                return NotFound();
-            var card = await _dbContext.Cards.Where(card=>!card.IsDeleted).SingleOrDefaultAsync(card=>card.Id == cardId);
+            var card = await _cardRepository.GetById(cardId);
             if (card == null)
                 return NotFound();
             card.TaskListId = taskListId;
-            await _dbContext.SaveChangesAsync();
+            await _cardRepository.Update(card);
             return Ok();
         }
 

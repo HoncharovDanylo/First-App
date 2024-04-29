@@ -16,13 +16,20 @@ public class ApplicationDbContext : DbContext
         
     }
 
-    public DbSet<Card> Cards { get; set; }
-    public DbSet<TaskList> TaskLists { get; set; }
+    public DbSet<Card?> Cards { get; set; }
+    public DbSet<TaskList?> TaskLists { get; set; }
     public DbSet<History> Histories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<TaskList>().HasIndex(t => t.Name).IsUnique();
+        modelBuilder.Entity<TaskList>().Property(x=>x.Name).HasMaxLength(100);
+        modelBuilder.Entity<Card>().Property(x=>x.Title).IsRequired().HasMaxLength(100);
+        modelBuilder.Entity<Card>().Property(x=>x.Description).HasMaxLength(1000);
+        modelBuilder.Entity<Card>().Property(x=>x.Priority).IsRequired();
+        modelBuilder.Entity<Card>().Property(x=>x.DueDate).IsRequired();
+        // modelBuilder.Entity<Card>().HasIndex(x=>x.Title).IsUnique();
+        
         modelBuilder.Entity<Card>().HasOne(x => x.TaskList)
             .WithMany(x => x.Cards).HasForeignKey(x => x.TaskListId).OnDelete(DeleteBehavior.Cascade);
         
