@@ -17,7 +17,7 @@ public class CardRepository : ICardRepository
 
     public async Task<Card?> GetById(int id)
     {
-        return await _dbContext.Cards.FindAsync(id);
+        return await _dbContext.Cards.Include(x=>x.TaskList).FirstOrDefaultAsync(x=>x.Id ==id);
     }
 
     public async Task Create(Card card)

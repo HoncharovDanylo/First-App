@@ -51,7 +51,7 @@ namespace Api.Controllers
             });
             if (history == null)
                 return NotFound();
-            return Ok();
+            return Ok(history);
         }
     }
 }
