@@ -1,4 +1,5 @@
 using Api.Context;
+using Api.Extensions;
 using Api.Interfaces;
 using Api.Models;
 using Api.Models.DTOs.CardDTOs;
@@ -40,18 +41,24 @@ namespace Api.Controllers
                     Priority = c.Priority,
                     TaskListId = x.Id,
                     TaskListName = x.Name
-                }).ToList(),
+                }).OrderBy(x=>x.DueDate).ToList(),
                 CardsCount = x.Cards.Count
             });
             return Ok(taskLists);
         }
 
-        [HttpGet("list/movements/{id:int?}")]
-        public async Task<IActionResult> GetTaskListNames(int? id)
+        [HttpGet("list/movements/{id:int}")]
+        public async Task<IActionResult> GetTaskListNames(int id)
         {
-            var taskList = (await _taskListRepository.GetTaskLists()).Select(x=> new CardlessTaskListDto() { Id = x.Id, Name = x.Name });
-            if(id!=null)
-                taskList = taskList.Where(x=>x.Id != id);
+            var taskList = (await _taskListRepository.GetTaskLists()).Select(x=> new CardlessTaskListDto() { Id = x.Id, Name = x.Name }).Where(x=>x.Id != id);
+            return Ok(taskList);
+        }
+        
+        [HttpGet("list/movements/all/{id:int}")]
+        public async Task<IActionResult> GetAllTaskListNames(int id)
+        {
+            var taskList = (await _taskListRepository.GetTaskLists()).Select(x=> new CardlessTaskListDto() { Id = x.Id, Name = x.Name }).ToList();
+            taskList.MoveToFront(x => x.Id == id);
             return Ok(taskList);
         }
         [HttpGet("/lists/{id}")]
@@ -73,7 +80,7 @@ namespace Api.Controllers
                     Description = c.Description,
                     DueDate = c.DueDate,
                     Priority = c.Priority
-                }).ToList(),
+                }).OrderBy(x=>x.DueDate).ToList(),
                 CardsCount = taskList.Cards.Count
             };
             return Ok(taskListDto);

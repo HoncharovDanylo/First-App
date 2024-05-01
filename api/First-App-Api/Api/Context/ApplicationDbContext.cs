@@ -56,7 +56,7 @@ public class ApplicationDbContext : DbContext
         var historyId = 1;
         foreach (var card in cards)
         {
-            var hist = _historyService.TrackCreation(card);
+            var hist = _historyService.TrackCreation(card, lists.Find(x=>x.Id == card.TaskListId).Name);
             hist.Id = historyId++;
             histories.Add(hist);
         }
@@ -75,19 +75,21 @@ public class ApplicationDbContext : DbContext
             await cards.LoadAsync();
             foreach (var card in (IEnumerable<Card>)cards.CurrentValue)
             { 
-                histories.Add(_historyService.TrackDeletion(card));
+                histories.Add(_historyService.TrackDeletion(card, TaskLists.Find(card.TaskListId).Name));
             }
 
         }
         foreach (var entry in ChangeTracker.Entries().Where(entry => entry.Entity is Card && entry.State == EntityState.Modified))
         {
             var Originalvalues = entry.OriginalValues.Properties.ToDictionary(p => p.Name, p => entry.OriginalValues[p]);
+            Originalvalues.Add("oldListName", TaskLists.Find((int)(Originalvalues["TaskListId"])).Name);
             var CurrentValues = entry.CurrentValues.Properties.ToDictionary(p => p.Name, p => entry.CurrentValues[p]);
+            CurrentValues.Add("newListName", TaskLists.Find((int)(CurrentValues["TaskListId"])).Name);
             histories.AddRange( _historyService.TrackUpdate(Originalvalues, CurrentValues));
         }
         foreach (var entry in ChangeTracker.Entries().Where(entry => entry.Entity is Card && entry.State == EntityState.Deleted))
         {
-            histories.Add(_historyService.TrackDeletion((Card)entry.Entity));
+            histories.Add(_historyService.TrackDeletion((Card)entry.Entity, TaskLists.Find(((Card)entry.Entity).TaskListId).Name));
         }
 
         var addedEntries = ChangeTracker.Entries()
@@ -96,7 +98,7 @@ public class ApplicationDbContext : DbContext
         var saveChangesResult = await base.SaveChangesAsync(cancellationToken);
         foreach (var entry in addedEntries)
         {
-            histories.Add(_historyService.TrackCreation((Card)entry.Entity));
+            histories.Add(_historyService.TrackCreation((Card)entry.Entity,TaskLists.Find(((Card)entry.Entity).TaskListId).Name));
         }
         await Histories.AddRangeAsync(histories);
         var secondresult = await base.SaveChangesAsync(cancellationToken);

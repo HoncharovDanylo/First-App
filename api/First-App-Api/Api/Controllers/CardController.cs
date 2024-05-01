@@ -14,13 +14,11 @@ namespace Api.Controllers
     [ApiController]
     public class CardController : ControllerBase
     {
-        private readonly ApplicationDbContext _dbContext;
         private readonly IValidator<CreateUpdateCardDto> _validator;
         private readonly ICardRepository _cardRepository;
 
-        public CardController(ApplicationDbContext dbContext, IValidator<CreateUpdateCardDto> validator, ICardRepository cardRepository)
+        public CardController(IValidator<CreateUpdateCardDto> validator, ICardRepository cardRepository)
         {
-            _dbContext = dbContext;
             _validator = validator;
             _cardRepository = cardRepository;
         }
@@ -55,7 +53,7 @@ namespace Api.Controllers
                 {
                     Title = cardDto.Title.Trim(),
                     Description = cardDto.Description.Trim(),
-                    DueDate = cardDto.DueDate,
+                    DueDate = DateOnly.FromDateTime(cardDto.DueDate),
                     TaskListId = cardDto.TaskListId,
                     Priority = cardDto.Priority.Trim()
                 };
@@ -69,7 +67,7 @@ namespace Api.Controllers
         }
 
         [HttpPut("/cards/update/{id}")]
-        public async Task<IActionResult> UpdateCard(int? id, CreateUpdateCardDto updateDto)
+        public async Task<IActionResult> UpdateCard(int? id, [FromBody]CreateUpdateCardDto updateDto)
         {
             if (id == null)
                 return BadRequest();
@@ -81,7 +79,7 @@ namespace Api.Controllers
                 
                 card.Title = updateDto.Title.Trim();
                 card.Description = updateDto.Description.Trim();
-                card.DueDate = updateDto.DueDate;
+                card.DueDate = DateOnly.FromDateTime(updateDto.DueDate);
                 card.TaskListId = updateDto.TaskListId;
                 card.Priority = updateDto.Priority.Trim();
                 
