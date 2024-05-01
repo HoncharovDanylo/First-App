@@ -1,0 +1,57 @@
+version: '3.4'
+
+networks:
+  dev:
+    driver: bridge
+  
+services:
+  backend:
+    image: docker.io/library/app-api
+    depends_on:
+      - "postgres"
+    container_name: app-api-services
+    ports:
+      - "5152:80"
+    build: 
+      context: ./First-App-Api/Api/
+      dockerfile: Dockerfile
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=app_db;Port=5432;Database=tasks_database;Username=postgres;Password=admin
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      - dev
+  
+  postgres:
+    image: postgres:latest
+    container_name: app_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=tasks_database
+    ports:
+      - "5433:5432"
+    restart: always
+    volumes:
+      - app_data:/var/lib/postgresql/data
+    networks:
+      - dev
+  
+  frontend:
+    image: docker.io/library/app-web
+    depends_on:
+      - "backend"
+    container_name: app-web-services
+    ports:
+      - "8081:81"
+    build: 
+      context: ./First-App-Web/
+      dockerfile: Dockerfile
+    networks:
+      - dev
+
+
+volumes:
+  app_data:
+
+
+
