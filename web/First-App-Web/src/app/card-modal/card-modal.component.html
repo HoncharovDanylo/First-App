@@ -1,1 +1,83 @@
-<p>card-modal works!</p>
+<div class="wrapper">
+  <div class="info-section">
+    <div *ngIf="Card | async as card">
+      <div class="form-group cname" style="display:flex; justify-content:space-between">
+        <div>
+          <h2>{{card.title}}</h2>
+        </div>
+        <div>
+          <p-button icon="pi pi-pen-to-square" label="Edit" severity="secondary"></p-button>
+        </div>
+      </div>
+      <br>
+      <div class="wrapper">
+        <div class="center">
+          <div>
+            <i class="pi pi-list"></i> <span> List</span>
+          </div>
+        </div>
+        <div>
+          <p><b>{{card.taskListName}}</b></p>
+        </div>
+        <div class="center">
+          <div>
+            <i class="pi pi-calendar"></i> <span> Due date</span>
+          </div>
+        </div>
+        <div >
+          <p><b>{{card.dueDate | date : 'E dd MMM'}}</b></p>
+        </div>
+        <div class="center">
+          <div>
+            <i class="pi pi-tag"></i> <span> Priority</span>
+          </div>
+        </div>
+        <div>
+          <p><b>{{card.priority}}</b></p>
+        </div>
+      </div>
+      <h3>Description</h3>
+      <div class="form-group">
+        <p>{{card.description}}</p>
+      </div>
+
+    </div>
+  </div>
+  <div class="activity-section">
+<h2>Activity</h2>
+<div>
+  <ul>
+    <li *ngFor="let history of CardHistory | async" class="mt-4">
+      @if (history.action.toLowerCase() == 'create')
+      {
+        <span>You created this card</span>
+      }
+      @else if (history.action.toLowerCase() == 'change')
+      {
+        @if (history.field.toLowerCase() == 'title')
+        {
+          <span>You renamed this card from <b><i class="pi pi-bullseye"></i>  {{history.previousValue}}</b> to <b><i class="pi pi-bullseye"></i>  {{history.newValue}}</b></span>
+        }
+        @else if (history.field.toLowerCase() == 'description')
+        {
+          <span>You changed the description of this card</span>
+        }
+        @else if (history.field.toLowerCase() == 'due date')
+        {
+          <span>You changed the due date from <b><i class="pi pi-bullseye"></i>  {{history.previousValue}}</b> to <b><i class="pi pi-bullseye"></i>  {{history.newValue}}</b></span>
+        }
+        @else if (history.field.toLowerCase() == 'task list')
+        {
+          <span>You changed status from <b><i class="pi pi-bullseye"></i>  {{history.previousValue}}</b> to <b><i class="pi pi-bullseye"></i>  {{history.newValue}}</b></span>
+        }
+        @else if (history.field.toLowerCase() == 'priority')
+        {
+          <span>You changed the priority from <b><i class="pi pi-bullseye"></i>  {{history.previousValue}}</b> to <b><i class="pi pi-bullseye"></i>  {{history.newValue}}</b></span>
+        }
+      }
+      <p style="padding-top:5px">{{history.timestamp | date: 'MMM d'}} at {{history.timestamp | date: 'hh:mm a'}}</p>
+    </li>
+  </ul>
+</div>
+  </div>
+</div>

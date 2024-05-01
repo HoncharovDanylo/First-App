@@ -1,0 +1,7 @@
+#dropdownBasic1 {
+  width: 100%;
+}
+
+.dropdown-toggle-settings:after {
+  content: none !important;
+}

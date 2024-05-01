@@ -1,6 +1,11 @@
-.header-container{
-  margin: 10px 40px 10px 20px;
+.header-container {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  margin-bottom: 1vh;
+}
+.sideheader{
+  display: flex;
+  flex-direction: row;
+  justify-content:space-between;
 }

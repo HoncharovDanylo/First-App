@@ -1,0 +1,38 @@
+<div *ngIf="TasksList">
+  <div class="list-container">
+    <div *ngFor="let list of TasksList | async" class="container-el">
+      <app-tasks-list (listUpdateEvent)="ngOnInit()" [TaskList]=list ></app-tasks-list>
+    </div>
+    <div class="container-el">
+      <hr class="m-0">
+      <div class="list-header m-2" >
+        <div class="m-0"><p class="m-0">Add new list</p></div>
+        <div class="m-0" style="cursor: pointer" (click)="showCreateList = !showCreateList">
+          <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"  width="20" height="20" viewBox="0 0 50 50">
+            <path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 24 13 L 24 24 L 13 24 L 13 26 L 24 26 L 24 37 L 26 37 L 26 26 L 37 26 L 37 24 L 26 24 L 26 13 L 24 13 z"></path>
+          </svg>
+        </div>
+      </div>
+      <hr style="margin-top: 2px">
+      <div class="create-list" *ngIf="showCreateList">
+        <form #form="ngForm" (ngSubmit)="OnSubmit()">
+          <div class="form-group">
+            <input type="text" class="form-control" id="listname" name="listname"  [(ngModel)]="CreateList.name" #listname="ngModel" placeholder="List name" required maxlength="100">
+            <div
+              *ngIf="listname.invalid && (listname.dirty || listname.touched)" class=" alert-danger">
+              <div *ngIf="listname.errors?.['required']" style="color:red">List Name is required.</div>
+              <div *ngIf="listname.errors?.['maxlength']" style="color: red">Name max size is 100 characters.</div>
+
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding-bottom: 10px; padding-top: 10px">
+            <button type="submit" style="width: 47%;" class="btn btn-primary">Create</button>
+            <button class="btn btn-secondary" style="width: 47%" (click)="OnCreateAction()">Cancel</button>
+          </div>
+
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

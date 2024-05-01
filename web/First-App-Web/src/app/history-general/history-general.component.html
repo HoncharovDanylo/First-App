@@ -1,0 +1,39 @@
+<ul>
+<li *ngFor="let history of histories" class="mt-4">
+  @if (history.action.toLowerCase() == 'create')
+  {
+    <span>You added <b><i class="pi pi-bullseye"></i>  {{history.cardName}}</b> to the {{history.listName}}</span>
+  }
+  @else if (history.action.toLowerCase() == 'delete')
+  {
+    <span>You deleted <b><i class="pi pi-bullseye"></i>  {{history.cardName}}</b> from  {{history.listName}}</span>
+  }
+  @else if (history.action.toLowerCase() == 'change')
+  {
+    @if (history.field.toLowerCase() == 'title')
+    {
+      <span>You renamed <b><i class="pi pi-bullseye"></i>  {{history.previousValue}}</b> to <b><i class="pi pi-bullseye"></i>  {{history.newValue}}</b></span>
+    }
+    @else if (history.field.toLowerCase() == 'description')
+    {
+      <span>You changed the description of <b><i class="pi pi-bullseye"></i>  {{history.cardName}}</b></span>
+    }
+    @else if (history.field.toLowerCase() == 'due date')
+    {
+      <span>You changed the due date of <b><i class="pi pi-bullseye"></i>  {{history.cardName}}</b> from {{history.previousValue}} to {{history.newValue}}</span>
+    }
+    @else if (history.field.toLowerCase() == 'task list')
+    {
+      <span>You moved <b><i class="pi pi-bullseye"></i>  {{history.cardName}}</b> from {{history.previousValue}} to {{history.newValue}}</span>
+    }
+    @else if (history.field.toLowerCase() == 'priority')
+    {
+      <span>You changed the priority of <b><i class="pi pi-bullseye"></i>  {{history.cardName}}</b> from {{history.previousValue}} to {{history.newValue}}</span>
+    }
+  }
+  <p style="padding-top:5px">{{history.timestamp | date: 'MMM d'}} at {{history.timestamp | date: 'hh:mm a'}}</p>
+</li>
+</ul>
+<div style="display:flex; justify-content:center" *ngIf="ShowMore">
+  <p-button (onClick)="GetHistories()" [outlined]="true"icon="pi pi-arrow-down" label="Download more"></p-button>
+</div>
