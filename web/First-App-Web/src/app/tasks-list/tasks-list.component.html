@@ -1,1 +1,53 @@
-<p>tasks-list works!</p>
+<div class="list-container">
+  <hr class="m-0">
+  <div class="list-header m-2" >
+    <div class="m-0"><p class="m-0">{{TaskList.name}}</p></div>
+    <div class="m-0">
+      <span style="margin-right: 5px">{{TaskList.cardsCount}}</span>
+
+          <span ngbDropdown class="d-inline-block">
+              <span style="cursor: pointer" class="dropdown-toggle" data-toggle="" ngbDropdownToggle>
+                <svg xmlns="http://www.w3.org/2000/svg"  width="16" height="16" fill="currentColor"  class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                 <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                </svg>
+              </span>
+            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+              <button ngbDropdownItem (click)="ShowListEdit = !ShowListEdit; this.NewListName=TaskList.name">Edit</button>
+              <button ngbDropdownItem (click)="onDelete()"><span> Delete</span></button>
+            </div>
+          </span>
+    </div>
+  </div>
+  <hr style="margin-top: 2px">
+  <div class="edit-list" *ngIf="ShowListEdit">
+    <form #form="ngForm"   (ngSubmit)="OnEditSubmit()">
+      <div class="form-group">
+        <input type="text" class="form-control" id="listname" name="listname" [(ngModel)]="NewListName" #listname = "ngModel" placeholder="List name" required maxlength="100" >
+        <div
+          *ngIf="listname.invalid && (listname.dirty || listname.touched)" class=" alert-danger" style="color: red">
+          <div *ngIf="listname.errors?.['required']">List Name is required.</div>
+          <div *ngIf="listname.errors?.['maxlength']">Name max size is 100 characters.</div>
+
+        </div>
+      </div>
+      <div style="display: flex; justify-content: space-between; padding-top: 10px; padding-bottom: 10px">
+        <button type="submit" style="width: 47%;" class="btn btn-primary">Save</button>
+        <button class="btn btn-secondary" style="width: 47%" (click)="ShowListEdit = false; NewListName='';" >Cancel</button>
+      </div>
+
+    </form>
+  </div>
+  <div class="add-btn-custom" (click)="openCreateCardDialog()">
+    <button type="button" class="btn btn-outline-dark" style="border-style: dashed">+ Add new card</button>
+  </div>
+    <br>
+  <div class="cards-list">
+    <div class="card mb-3" *ngFor="let card1 of TaskList?.cards">
+      <app-card (cardEdited)="listUpdateEvent.emit()" [Card]="card1" [MovementsList]="AvailableList"></app-card>
+    </div>
+
+  </div>
+</div>
+
+
+

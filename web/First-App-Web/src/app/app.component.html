@@ -1,9 +1,12 @@
+<p-sidebar [(visible)]="this.sidebarVisible" position="right"  [style]="{width : '30em'}">
+  <ng-template pTemplate="header" styleClass="sideheader">History</ng-template>
+  <ng-template pTemplate="content"><app-history-general></app-history-general></ng-template>
+</p-sidebar>
 <div class="header-container">
 <div><h2>My Task Board</h2></div>
-<div style="align-self: flex-end"><button type="button" class="btn btn-outline-secondary">History</button></div>
+<div style="align-self: flex-end"><button type="button" class="btn btn-outline-secondary" (click)="this.historyClick()">History</button></div>
 </div>
 <div class="lists-container">
-
-
+<app-lists></app-lists>
 </div>
 <router-outlet />

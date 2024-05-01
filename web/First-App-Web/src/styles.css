@@ -1,1 +1,12 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+@import "primeicons/primeicons.css";
+body {
+  margin: 10px 40px 0px 20px;
+}
+
+.borderless-dialog .mat-dialog-container {
+  padding: 0px;
+  overflow: hidden;
+}
