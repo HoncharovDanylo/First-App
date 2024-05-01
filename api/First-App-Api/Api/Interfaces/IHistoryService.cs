@@ -5,7 +5,7 @@ namespace Api.Interfaces;
 
 public interface IHistoryService
 {
-    History TrackCreation(Card card);
-    History TrackDeletion(Card card);
+    History TrackCreation(Card card, string listName);
+    History TrackDeletion(Card card, string listName);
     IEnumerable<History> TrackUpdate(Dictionary<string,object> oldValue, Dictionary<string,object> newValue);
 }

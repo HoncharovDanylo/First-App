@@ -25,6 +25,7 @@ namespace Api.Controllers
             {
                 Action = x.Action,
                 CardName = x.CardTitle,
+                ListName = x.ListName,
                 Field = x.Field,
                 NewValue = x.NewValue,
                 PreviousValue = x.PreviousValue,
@@ -42,6 +43,7 @@ namespace Api.Controllers
                 
                 Action = history.Action,
                 CardName = history.CardTitle,
+                ListName = history.ListName,
                 Field = history.Field,
                 NewValue = history.NewValue,
                 PreviousValue = history.PreviousValue,

@@ -9,7 +9,7 @@ namespace Api.Services;
 public class HistoryService : IHistoryService
 {
     
-    public History TrackCreation(Card card)
+    public History TrackCreation(Card card, string listName)
     {
         var history = new History()
         {
@@ -18,12 +18,13 @@ public class HistoryService : IHistoryService
             Field = "Card",
             NewValue = card.Title,
             Timestamp = DateTime.UtcNow,
-            CardTitle = card.Title
+            CardTitle = card.Title,
+            ListName = listName
         };
         return history;
     }
 
-    public History TrackDeletion(Card card)
+    public History TrackDeletion(Card card, string listName)
     {
         var history = new History()
         {
@@ -32,7 +33,8 @@ public class HistoryService : IHistoryService
             PreviousValue = card.Title,
             Timestamp = DateTime.UtcNow,
             CardId = card.Id,
-            CardTitle = card.Title
+            CardTitle = card.Title,
+            ListName = listName
         };
         return history;
     }
@@ -81,8 +83,8 @@ public class HistoryService : IHistoryService
             {
                 Action = "Change",
                 Field = "Task List",
-                PreviousValue = oldValue["TaskListId"].ToString(),
-                NewValue = newValue["TaskListId"].ToString(),
+                PreviousValue = oldValue["oldListName"].ToString(),
+                NewValue = newValue["newListName"].ToString(),
                 Timestamp = DateTime.UtcNow,
                 CardId = (int)oldValue["Id"],
                 CardTitle = newValue["Title"].ToString()
