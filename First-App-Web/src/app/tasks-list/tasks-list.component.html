@@ -12,8 +12,8 @@
                 </svg>
               </span>
             <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-              <button ngbDropdownItem (click)="ShowListEdit = !ShowListEdit; this.NewListName=TaskList.name">Edit</button>
-              <button ngbDropdownItem (click)="onDelete()"><span> Delete</span></button>
+              <button ngbDropdownItem (click)="ShowListEdit = !ShowListEdit; this.NewListName=TaskList.name"><i class="pi pi-pen-to-square"></i>   Edit</button>
+              <button ngbDropdownItem (click)="onDelete()" style="color:red"><i class="pi pi-trash"></i>   Delete</button>
             </div>
           </span>
     </div>

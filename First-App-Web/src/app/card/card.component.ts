@@ -28,7 +28,8 @@ import {Element} from "@angular/compiler";
     NgbDropdownMenu,
     NgbDropdownToggle,
     NgForOf,
-    AsyncPipe
+    AsyncPipe,
+    DatePipe
   ],
   providers:[DialogService],
   templateUrl: './card.component.html',
@@ -69,15 +70,7 @@ export class CardComponent {
  openEditCardDialog(){
    this.editRef = this.dialogService.open(CardModalEditComponent,{
       data: {
-        Card : {
-          Title : this.Card?.title,
-          Description : this.Card?.description,
-          DueDate : this.Card?.dueDate,
-          Priority : this.Card?.priority,
-          TaskListId : this.Card?.taskListId
-        },
         CardId : this.Card?.id,
-        ListName : this.Card?.taskListName
       },
       width: '40vw',
       header: 'Edit Card',

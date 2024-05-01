@@ -12,15 +12,15 @@
                 </svg>
               </span>
             <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-              <button ngbDropdownItem (click)="openEditCardDialog()">Edit</button>
-              <button ngbDropdownItem (click)="onDelete()">Delete</button>
+              <button ngbDropdownItem (click)="openEditCardDialog()"><i class="pi pi-pen-to-square"></i>   Edit</button>
+              <button ngbDropdownItem (click)="onDelete()" style="color:red"><i class="pi pi-trash"></i>   Delete</button>
             </div>
           </span>
       </div>
 
     </div>
       <h6 class="card-subtitle mb-2 text-body-secondary" style="width: 80%">{{this.Card?.description}}</h6>
-      <p class="card-subtitle mb-2 text-body-secondary" style="width: 80%">{{Card?.dueDate}}</p>
+      <p class="card-subtitle mb-2 text-body-secondary" style="width: 80%"><i class="pi pi-calendar"></i>   {{Card?.dueDate | date: 'E, dd MMM'}}</p>
       <p class="card-subtitle mb-2 text-body-secondary" style="width: 80%">{{Card?.priority}}</p>
       <div ngbDropdown class="d-inline-block" style="width: 100%" (click)="$event.stopPropagation()">
           <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>
@@ -28,7 +28,7 @@
           </button>
           <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
             <span *ngFor="let list of MovementsList | async">
-              <button (click)="ChangeList(list.id)"  ngbDropdownItem>{{list.name}}</button>
+              <button (click)="ChangeList(list.id)"  ngbDropdownItem><i class="pi pi-arrow-right"></i>   {{list.name}}</button>
             </span>
 
 

@@ -15,6 +15,7 @@ import {InputTextareaModule} from "primeng/inputtextarea";
 import {Observable} from "rxjs";
 import {AsyncPipe, NgIf} from "@angular/common";
 import {MessageModule} from "primeng/message";
+import {CreateCardModel} from "../models/create-card.mode";
 
 @Component({
   selector: 'app-card-modal-edit',
@@ -42,6 +43,7 @@ import {MessageModule} from "primeng/message";
 })
 export class CardModalEditComponent implements OnInit{
   MovementsList : Observable<CardlessListModel[]> | undefined;
+  CardEdit : CreateCardModel | undefined;
   priority : string ='';
   today = new Date();
   constructor(public dialogRef : DynamicDialogRef<CardModalEditComponent>,
@@ -50,11 +52,27 @@ export class CardModalEditComponent implements OnInit{
   }
 
   ngOnInit(): void {
-   this.MovementsList =  this.listservice.GetAllListsForMove(this.dialogConfig.data.Card.TaskListId);
+   this.cardService.GetCard(this.dialogConfig.data.CardId).subscribe({
+    next: (value) => {
+      let date = new Date(value.dueDate);
+      this.CardEdit = {
+        Title : value.title,
+        Description : value.description,
+        DueDate : date,
+        Priority : value.priority,
+        TaskListId : value.taskListId
+      }
+      this.MovementsList =  this.listservice.GetAllListsForMove(value.taskListId);
+    },
+    error: (error) => {
+      console.log(error);
+    }
+
+  });
+
   }
   OnFormSubmit(){
-    console.log(this.dialogConfig.data.Card.DueDate)
-    this.cardService.EditCard(this.dialogConfig.data.CardId,this.dialogConfig.data.Card).subscribe({
+    this.cardService.EditCard(this.dialogConfig.data.CardId,this.CardEdit!).subscribe({
       next: ()=>{
         this.closeDialog()
       },
