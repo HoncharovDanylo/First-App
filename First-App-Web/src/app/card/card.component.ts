@@ -43,7 +43,6 @@ export class CardComponent {
  infoRef : DynamicDialogRef | undefined;
 
  constructor(private cardService : CardService,public dialogService : DialogService) {
-   console.log(this.MovementsList)
  }
 
  ChangeList(listId : number){
@@ -90,5 +89,11 @@ export class CardComponent {
       contentStyle: {padding:'0'},
       styleClass: 'card-modal xl:w-10 lg:w-10 md:w-10 xs:max-w-screen, sm:max-w-screen dialog'
     })
- }
+   this.infoRef.onClose.subscribe((res : boolean)=>{
+     if (res)
+     {
+     this.openEditCardDialog();
+     }
+   });
+  }
 }
