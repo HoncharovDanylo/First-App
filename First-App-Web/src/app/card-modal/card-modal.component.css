@@ -1,29 +1,27 @@
-.wrapper{
+.wrapper-inner{
+  overflow-wrap: break-word;
   display:grid;
   grid-template-columns: 60% 40%;
 }
 .activity-section{
   padding-left:40px;
   padding-top:30px;
+  padding-right:40px;
   background-color: #f3f4f6;
 }
 .info-section{
   padding: 30px 40px 100px 20px;
 }
-::ng-deep .card-modal {
-  .p-dialog-header{
-    background-color: #5e647f;
-    .p-dialog-title{
-      color:red;
-      background-color: #5e647f;
+@media screen and (min-width: 950px) {
+  .wrapper-outer{
+    overflow-wrap: break-word;
+    display:grid;
+    grid-template-columns: 60% 40%;
+  }
+}
+@media screen and (max-width: 950px) {
+  .wrapper-outer{
+    overflow-wrap: break-word;
 
-    }
-    .p-dialog-header-icons{
-      .p-dialog-header-icon{
-        color:red;
-        background-color: #5e647f;
-
-      }
-    }
   }
 }

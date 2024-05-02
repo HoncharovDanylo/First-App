@@ -55,7 +55,7 @@ constructor(public historyService : HistoryService,
           CardId: this.config.data.CardId
         },
         header: 'Edit Card',
-        width: '40vw'
+        styleClass : 'xl:w-6 lg:w-7 md:w-9 xs:max-w-screen, sm:max-w-screen dialog'
       });
       this.ref.close()
     }

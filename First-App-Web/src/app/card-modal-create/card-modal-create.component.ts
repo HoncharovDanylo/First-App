@@ -62,7 +62,7 @@ SelectedValue : CreateCardModel={
   Title : '',
   Description : '',
   DueDate : new Date(),
-  Priority : '',
+  Priority : 'Low',
   TaskListId : 0
 };
 today = new Date();

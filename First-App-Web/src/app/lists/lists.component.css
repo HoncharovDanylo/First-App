@@ -1,16 +1,39 @@
 .list-container {
-  display: flex;
-  flex-direction: row;
-  /*justify-content: space-between;*/
-  justify-content: start;
-  margin-top: 10px;
+  /*display: flex;*/
+  /*flex-direction: row;*/
+  /*!*justify-content: space-between;*!*/
+  /*justify-content: start;*/
+  /*margin-top: 10px;*/
+  bottom: 0;
+  left:0;
+  margin-bottom:8px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding-bottom:8px;
+  padding-top:2px;
+  right:0;
+  position:relative;
+  scrollbar-width:auto;
+  top:-2px;
+  user-select:none;
+  display:flex;
+  flex-direction:row;
+  list-style:none;
+  padding: 0 6px;
 }
 
-.list-container > div {
-  width: 22%;
-  gap: 10px;
-  margin: 10px;
+.list-container > li {
+  width: 270px;
+  /*gap: 10px;*/
+  /*margin: 10px;*/
+  padding: 0 6px;
+  align-self:start;
+  flex-shrink:0;
+  display:block;
+  height:100%;
 }
+
+
 
 .list-header {
   display: flex;

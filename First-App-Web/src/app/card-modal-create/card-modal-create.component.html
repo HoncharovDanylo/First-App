@@ -1,7 +1,7 @@
  <div class="dialog-body mb-4 mt-2" >
     <form #ngForm  name="createForm" (ngSubmit)="OnFormSubmit()">
       <div class="form-group cname">
-            <input id="title" placeholder="Enter card name*" name="title" [(ngModel)]="SelectedValue.Title" #title="ngModel" required maxlength="100" />
+            <input id="title" style="max-width:90%" placeholder="Enter card name*" name="title" [(ngModel)]="SelectedValue.Title" #title="ngModel" required maxlength="100" />
         <div
           *ngIf="title.invalid && (title.dirty || title.touched)" class=" alert-danger" style="color: red; font-size:14px">
           <div *ngIf="title.errors?.['required']">Card Name is required.</div>
@@ -16,7 +16,7 @@
         </div>
       </div>
         <div>
-          <p-dropdown name="cardlist" appendTo="body" [options]="(MovementsList | async)!" [(ngModel)]="SelectedValue.TaskListId" #list="ngModel" optionLabel="name" dataKey="id" optionValue="id" required placeholder="Select a List"></p-dropdown>
+          <p-dropdown name="cardlist" [style]="{  width: '100%' }" appendTo="body" [options]="(MovementsList | async)!" [(ngModel)]="SelectedValue.TaskListId" #list="ngModel" optionLabel="name" dataKey="id" optionValue="id" required placeholder="Select a List"></p-dropdown>
           <div
             *ngIf="list.invalid && (list.dirty || list.touched)" class=" alert-danger" style="color: red; font-size:14px">
             <div *ngIf="title.errors?.['required']">List is required.</div>
@@ -40,7 +40,7 @@
           </div>
         </div>
         <div>
-          <p-dropdown name="cardpriority" [options]="['Low','Medium','High']" appendTo="body" #priority="ngModel" [(ngModel)]="SelectedValue.Priority" required placeholder="Select a priority"></p-dropdown>
+          <p-dropdown id="cardpriority"   name="cardpriority" [options]="['Low','Medium','High']" appendTo="body" #priority="ngModel" [(ngModel)]="SelectedValue.Priority" required placeholder="Select a priority"></p-dropdown>
           <div
             *ngIf="priority.invalid && (priority.dirty || priority.touched)" class=" alert-danger" style="color: red; font-size:14px">
             <div *ngIf="priority.errors?.['required']">Priority is required.</div>

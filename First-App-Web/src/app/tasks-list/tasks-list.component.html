@@ -1,7 +1,7 @@
 <div class="list-container">
   <hr class="m-0">
   <div class="list-header m-2" >
-    <div class="m-0"><p class="m-0">{{TaskList.name}}</p></div>
+    <div class="m-0" style="overflow-wrap:break-word; max-width: 70%"><p class="m-0"  >{{TaskList.name}}</p></div>
     <div class="m-0">
       <span style="margin-right: 5px">{{TaskList.cardsCount}}</span>
 
@@ -22,7 +22,7 @@
   <div class="edit-list" *ngIf="ShowListEdit">
     <form #form="ngForm"   (ngSubmit)="OnEditSubmit()">
       <div class="form-group">
-        <input type="text" class="form-control" id="listname" name="listname" [(ngModel)]="NewListName" #listname = "ngModel" placeholder="List name" required maxlength="100" >
+        <input type="text" class="form-control" id="listname" name="listname" [(ngModel)]="NewListName" #listname = "ngModel" placeholder="List name" required maxlength="50" >
         <div
           *ngIf="listname.invalid && (listname.dirty || listname.touched)" class=" alert-danger" style="color: red">
           <div *ngIf="listname.errors?.['required']">List Name is required.</div>

@@ -35,12 +35,21 @@
   font-weight: bold;
   color: #000;
 }
-.wrapper{
-  display: grid;
-  grid-template-columns: 50% 30%;
-}
 .center{
   display: flex;
   justify-content: start;
   align-items: center;
 }
+@media screen and (max-width: 790px) {
+  .wrapper{
+    display: grid;
+    grid-template-columns: 50% 50%;
+  }
+}
+@media screen and (min-width: 790px) {
+  .wrapper{
+    display: grid;
+    grid-template-columns: 50% 30%;
+  }
+}
+

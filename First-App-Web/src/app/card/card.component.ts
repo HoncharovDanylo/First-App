@@ -72,8 +72,9 @@ export class CardComponent {
       data: {
         CardId : this.Card?.id,
       },
-      width: '40vw',
       header: 'Edit Card',
+      styleClass : 'xl:w-6 lg:w-7 md:w-9 xs:max-w-screen, sm:max-w-screen dialog'
+
 
    })
    this.editRef.onClose.subscribe(Result=>{
@@ -85,10 +86,9 @@ export class CardComponent {
       data: {
         CardId : this.Card?.id,
       },
-      width: '80vw',
       header: 'Card info',
       contentStyle: {padding:'0'},
-      styleClass: 'card-modal'
+      styleClass: 'card-modal xl:w-10 lg:w-10 md:w-10 xs:max-w-screen, sm:max-w-screen dialog'
     })
  }
 }
