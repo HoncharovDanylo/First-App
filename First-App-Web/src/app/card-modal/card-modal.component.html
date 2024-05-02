@@ -1,22 +1,22 @@
-<div class="wrapper">
-  <div class="info-section">
+<div class="wrapper-outer">
+  <div class="info-section" style="width:100%">
     <div *ngIf="Card | async as card">
       <div class="form-group cname" style="display:flex; justify-content:space-between">
-        <div>
-          <h2>{{card.title}}</h2>
+        <div style="overflow-wrap:break-word; max-width: 70%; font-weight: bold; font-size: 20px">
+          <p >{{card.title}}</p>
         </div>
         <div>
-          <p-button (click)="onEdit()" icon="pi pi-pen-to-square" label="Edit" severity="secondary"></p-button>
+          <button (click)="onEdit()" type="button" class="btn btn-outline-secondary"><i class="pi pi-pen-to-square"></i>  Edit</button>
         </div>
       </div>
       <br>
-      <div class="wrapper">
+      <div class="wrapper-inner">
         <div class="center">
           <div>
             <i class="pi pi-list"></i> <span> List</span>
           </div>
         </div>
-        <div>
+        <div style="overflow-wrap:break-word;">
           <p><b>{{card.taskListName}}</b></p>
         </div>
         <div class="center">
@@ -38,7 +38,7 @@
       </div>
       <h3>Description</h3>
       <div class="form-group">
-        <p>{{card.description}}</p>
+        <span style="white-space: pre-line; overflow-wrap:break-word;">{{card.description}}</span>
       </div>
 
     </div>

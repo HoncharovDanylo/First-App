@@ -43,7 +43,13 @@ import {CreateCardModel} from "../models/create-card.mode";
 })
 export class CardModalEditComponent implements OnInit{
   MovementsList : Observable<CardlessListModel[]> | undefined;
-  CardEdit : CreateCardModel | undefined;
+  CardEdit : CreateCardModel={
+    Title : '',
+    Description : '',
+    DueDate : new Date(),
+    Priority : '',
+    TaskListId : 0
+  };
   priority : string ='';
   today = new Date();
   constructor(public dialogRef : DynamicDialogRef<CardModalEditComponent>,

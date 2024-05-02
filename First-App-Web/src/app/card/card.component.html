@@ -1,7 +1,7 @@
 <div class="card"  (click)="ShowCardModal()" style="width: 100%;">
   <div class="card-body">
-    <div style="display: flex; justify-content: space-between">
-      <div>
+    <div style="display: flex; justify-content: space-between; ">
+      <div  style="overflow-wrap:break-word; max-width:80%">
         <h5 class="card-title">{{this.Card?.title}}</h5>
       </div>
       <div>
@@ -19,9 +19,15 @@
       </div>
 
     </div>
-      <h6 class="card-subtitle mb-2 text-body-secondary" style="width: 80%">{{this.Card?.description}}</h6>
+    @if (this.Card?.description?.length! > 200){
+      <h6 class="card-subtitle mb-2 text-body-secondary" style="">{{this.Card?.description?.slice(0,199)}}...</h6>
+
+    }
+    @else{
+      <h6 class=" mb-2 text-body-secondary" style="width: 80%">{{this.Card?.description}}</h6>
+    }
       <p class="card-subtitle mb-2 text-body-secondary" style="width: 80%"><i class="pi pi-calendar"></i>   {{Card?.dueDate | date: 'E, dd MMM'}}</p>
-      <p class="card-subtitle mb-2 text-body-secondary" style="width: 80%">{{Card?.priority}}</p>
+      <p class="card-subtitle mb-2 text-body-secondary" style="width: 80%"> Priority : <b>{{Card?.priority}}</b></p>
       <div ngbDropdown class="d-inline-block" style="width: 100%" (click)="$event.stopPropagation()">
           <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>
             Move to

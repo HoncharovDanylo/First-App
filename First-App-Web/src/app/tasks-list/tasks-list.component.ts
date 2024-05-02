@@ -90,7 +90,7 @@ constructor(private listservice : ListService, public dialogService : DialogServ
     this.ref = this.dialogService.open(CardModalCreateComponent, {
       data :{id: this.TaskList.id, name: this.TaskList.name},
       header: 'Create Card',
-      width: '40vw'
+      styleClass: 'xl:w-6 lg:w-7 md:w-9 xs:max-w-screen, sm:max-w-screen dialog',
     });
     this.ref.onClose.subscribe(() => {
       this.listUpdateEvent.emit();

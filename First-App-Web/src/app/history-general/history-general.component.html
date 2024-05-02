@@ -1,5 +1,5 @@
 <ul>
-<li *ngFor="let history of histories" class="mt-4">
+<li *ngFor="let history of histories" class="mt-4" style="overflow-wrap: break-word">
   @if (history.action.toLowerCase() == 'create')
   {
     <span>You added <b><i class="pi pi-bullseye"></i>  {{history.cardName}}</b> to the {{history.listName}}</span>

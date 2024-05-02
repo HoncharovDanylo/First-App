@@ -1,9 +1,9 @@
 <div *ngIf="TasksList">
-  <div class="list-container">
-    <div *ngFor="let list of TasksList | async" class="container-el">
+  <ol class="list-container">
+    <li *ngFor="let list of TasksList | async" class="container-el">
       <app-tasks-list (listUpdateEvent)="ngOnInit()" [TaskList]=list ></app-tasks-list>
-    </div>
-    <div class="container-el">
+    </li>
+    <li class="container-el">
       <hr class="m-0">
       <div class="list-header m-2" >
         <div class="m-0"><p class="m-0">Add new list</p></div>
@@ -17,7 +17,7 @@
       <div class="create-list" *ngIf="showCreateList">
         <form #form="ngForm" (ngSubmit)="OnSubmit()">
           <div class="form-group">
-            <input type="text" class="form-control" id="listname" name="listname"  [(ngModel)]="CreateList.name" #listname="ngModel" placeholder="List name" required maxlength="100">
+            <input type="text" class="form-control" id="listname" name="listname"  [(ngModel)]="CreateList.name" #listname="ngModel" placeholder="List name" required maxlength="50">
             <div
               *ngIf="listname.invalid && (listname.dirty || listname.touched)" class=" alert-danger">
               <div *ngIf="listname.errors?.['required']" style="color:red">List Name is required.</div>
@@ -33,6 +33,6 @@
 
         </form>
       </div>
-    </div>
-  </div>
+    </li>
+  </ol>
 </div>
