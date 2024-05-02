@@ -18,7 +18,7 @@ ng serve
 ```
 # Starting Backend localy
 
-to run backend first thing you need to specify your connection string to the database. You can do it in `First-App-Api\Api\appsettings.Development.json` if you want to run development mode with your database
+to run backend first thing you need to specify your connection string `DefaultConnection` to the database. You can do it in `First-App-Api\Api\appsettings.Development.json` if you want to run development mode with your own database
 Then run 
 ```sh
 dotnet restore
@@ -29,8 +29,5 @@ Then run your application
 #to run in the dev mode
 dotnet run --environment Development
 
-#to run in the prod mode
-dotnet run --environment Production
-```
 
 
