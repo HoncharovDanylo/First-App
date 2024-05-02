@@ -27,10 +27,8 @@ builder.Services.AddTransient<IHistoryService, HistoryService>();
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
-
 var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
 
