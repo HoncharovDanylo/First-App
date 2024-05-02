@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {HistoryService} from "../services/history.service";
 import {CardService} from "../services/card.service";
-import {DialogService, DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
+import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {Observable} from "rxjs";
 import { Card } from '../models/card.model';
 import {HistoryModel} from "../models/History.model";
@@ -11,7 +11,6 @@ import {CalendarModule} from "primeng/calendar";
 import {DropdownModule} from "primeng/dropdown";
 import {InputTextareaModule} from "primeng/inputtextarea";
 import {PaginatorModule} from "primeng/paginator";
-import {CardModalEditComponent} from "../card-modal-edit/card-modal-edit.component";
 
 @Component({
   selector: 'app-card-modal',
@@ -37,26 +36,13 @@ export class CardModalComponent implements OnInit{
 constructor(public historyService : HistoryService,
             public cardService : CardService,
             public config : DynamicDialogConfig ,
-            public ref: DynamicDialogRef<CardModalComponent>,
-            public dialogService : DialogService) {
-}
+            public ref: DynamicDialogRef<CardModalComponent>) {}
 
   ngOnInit(): void {
     this.Card = this.cardService.GetCard(this.config.data.CardId);
     this.CardHistory = this.historyService.getHistoryByCardId(this.config.data.CardId);
-    console.log(this.config.data.CardId)
-    this.CardHistory.subscribe({
-      next : value => console.log(value),
-    })
     }
     onEdit(){
-      this.dialogService.open(CardModalEditComponent, {
-        data: {
-          CardId: this.config.data.CardId
-        },
-        header: 'Edit Card',
-        styleClass : 'xl:w-6 lg:w-7 md:w-9 xs:max-w-screen, sm:max-w-screen dialog'
-      });
-      this.ref.close()
+      this.ref.close(true)
     }
 }
