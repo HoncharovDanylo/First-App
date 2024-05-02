@@ -28,6 +28,8 @@ Then run your application
 ```sh
 #to run in the dev mode
 dotnet run --environment Development
-
+```
+after your api will be available at http://localhost:5152/
+you can also see the endpoints at Swagger at http://localhost:5152/swagger/index.html
 
 
