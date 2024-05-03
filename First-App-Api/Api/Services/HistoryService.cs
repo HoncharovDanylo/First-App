@@ -9,7 +9,7 @@ namespace Api.Services;
 public class HistoryService : IHistoryService
 {
     
-    public History TrackCreation(Card card, string listName)
+    public History TrackCreation(Card card, string listName, int boardId)
     {
         var history = new History()
         {
@@ -19,12 +19,13 @@ public class HistoryService : IHistoryService
             NewValue = card.Title,
             Timestamp = DateTime.UtcNow,
             CardTitle = card.Title,
-            ListName = listName
+            ListName = listName,
+            BoardId = boardId
         };
         return history;
     }
 
-    public History TrackDeletion(Card card, string listName)
+    public History TrackDeletion(Card card, string listName, int boardId)
     {
         var history = new History()
         {
@@ -34,7 +35,8 @@ public class HistoryService : IHistoryService
             Timestamp = DateTime.UtcNow,
             CardId = card.Id,
             CardTitle = card.Title,
-            ListName = listName
+            ListName = listName,
+            BoardId = boardId
         };
         return history;
     }
@@ -51,7 +53,8 @@ public class HistoryService : IHistoryService
                 NewValue = newValue["Title"].ToString(),
                 Timestamp = DateTime.UtcNow,
                 CardId = (int)oldValue["Id"],
-                CardTitle = newValue["Title"].ToString()
+                CardTitle = newValue["Title"].ToString(),
+                BoardId = (int)oldValue["BoardId"]
 
             });
         if(!oldValue["Description"].Equals(newValue["Description"]))
@@ -63,7 +66,8 @@ public class HistoryService : IHistoryService
                 NewValue = newValue["Description"].ToString(),
                 Timestamp = DateTime.UtcNow,
                 CardId = (int)oldValue["Id"],
-                CardTitle = newValue["Title"].ToString()
+                CardTitle = newValue["Title"].ToString(),
+                BoardId = (int)oldValue["BoardId"]
 
             });
         if(!oldValue["DueDate"].Equals(newValue["DueDate"]))
@@ -75,7 +79,8 @@ public class HistoryService : IHistoryService
                 NewValue = newValue["DueDate"].ToString(),
                 Timestamp = DateTime.UtcNow,
                 CardId = (int)oldValue["Id"],
-                CardTitle = newValue["Title"].ToString()
+                CardTitle = newValue["Title"].ToString(),
+                BoardId = (int)oldValue["BoardId"]
 
             });
         if(!oldValue["TaskListId"].Equals(newValue["TaskListId"]))
@@ -87,7 +92,8 @@ public class HistoryService : IHistoryService
                 NewValue = newValue["newListName"].ToString(),
                 Timestamp = DateTime.UtcNow,
                 CardId = (int)oldValue["Id"],
-                CardTitle = newValue["Title"].ToString()
+                CardTitle = newValue["Title"].ToString(),
+                BoardId = (int)oldValue["BoardId"]
 
             });
         if(!oldValue["Priority"].Equals(newValue["Priority"]))
@@ -99,7 +105,8 @@ public class HistoryService : IHistoryService
                 NewValue = newValue["Priority"].ToString(),
                 Timestamp = DateTime.UtcNow,
                 CardId = (int)oldValue["Id"],
-                CardTitle = newValue["Title"].ToString()
+                CardTitle = newValue["Title"].ToString(),
+                BoardId = (int)oldValue["BoardId"]
 
             });
         return changes;

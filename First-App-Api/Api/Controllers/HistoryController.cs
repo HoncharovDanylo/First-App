@@ -9,12 +9,10 @@ namespace Api.Controllers
     [ApiController]
     public class HistoryController : ControllerBase
     {
-        private readonly ApplicationDbContext _dbContext;
         private readonly IHistoryRepository _historyRepository;
         
-        public HistoryController(ApplicationDbContext dbContext, IHistoryRepository historyRepository)
+        public HistoryController(IHistoryRepository historyRepository)
         {
-            _dbContext = dbContext;
             _historyRepository = historyRepository;
         }
 

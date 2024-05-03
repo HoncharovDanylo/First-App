@@ -16,11 +16,13 @@ namespace Api.Controllers
     {
         private readonly IValidator<CreateUpdateCardDto> _validator;
         private readonly ICardRepository _cardRepository;
+        private readonly ITaskListRepository _taskListRepository;
 
-        public CardController(IValidator<CreateUpdateCardDto> validator, ICardRepository cardRepository)
+        public CardController(IValidator<CreateUpdateCardDto> validator, ICardRepository cardRepository, ITaskListRepository taskListRepository)
         {
             _validator = validator;
             _cardRepository = cardRepository;
+            _taskListRepository = taskListRepository;
         }
             
         
@@ -74,8 +76,12 @@ namespace Api.Controllers
             if ((await _validator.ValidateAsync(updateDto)).IsValid)
             {
                 var card = await _cardRepository.GetById(id.Value); 
+                var newList = await _taskListRepository.GetById(updateDto.TaskListId);
+                if (card.TaskList.BoardId != newList.BoardId)
+                    return BadRequest();
                 if (card == null)
                     return NotFound();
+                
                 
                 card.Title = updateDto.Title.Trim();
                 card.Description = updateDto.Description.Trim();
@@ -103,7 +109,10 @@ namespace Api.Controllers
         public async Task<IActionResult> ChangeList(int cardId, int taskListId)
         {
             var card = await _cardRepository.GetById(cardId);
-            if (card == null)
+            var newList = await _taskListRepository.GetById(taskListId);
+            if (card.TaskList.BoardId != newList.BoardId)
+                return BadRequest();
+            if (card == null || newList == null)
                 return NotFound();
             card.TaskListId = taskListId;
             await _cardRepository.Update(card);

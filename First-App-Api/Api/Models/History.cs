@@ -2,6 +2,8 @@ namespace Api.Models;
 
 public class History : BaseEntity
 {
+    public int BoardId { get; set; }
+    public Board Board { get; set; }
     public int CardId { get; set; }
     public string CardTitle { get; set; }
     public string? ListName { get; set; }

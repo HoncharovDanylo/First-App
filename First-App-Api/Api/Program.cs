@@ -1,6 +1,7 @@
 using Api.Context;
 using Api.Interfaces;
 using Api.Middlewares;
+using Api.Models.DTOs.BoardDTOs;
 using Api.Models.DTOs.CardDTOs;
 using Api.Models.DTOs.TaskListDTOs;
 using Api.Repositories;
@@ -17,10 +18,12 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddScoped<IValidator<CreateUpdateCardDto>, CreateUpdateCardValidator>();
 builder.Services.AddScoped<IValidator<CreateTaskListDto>, CreateUpdateTaskListValidator>();
+builder.Services.AddScoped<IValidator<CreateUpdateBoardDto>, CreateUpdateBoardValidator>();
 
 builder.Services.AddScoped<ICardRepository, CardRepository>(); 
 builder.Services.AddScoped<IHistoryRepository, HistoryRepository>();
 builder.Services.AddScoped<ITaskListRepository, TaskListRepository>();
+builder.Services.AddScoped<IBoardRepository, BoardRepository>();
 
 builder.Services.AddTransient<IHistoryService, HistoryService>();
 
