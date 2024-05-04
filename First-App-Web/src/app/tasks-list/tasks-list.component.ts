@@ -6,7 +6,6 @@ import {CardComponent} from "../card/card.component";
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CardlessListModel} from "../models/cardless-list.model";
-import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {CardModalCreateComponent} from "../card-modal-create/card-modal-create.component";
 import {MatButtonModule} from "@angular/material/button";
 import {MatInputModule} from "@angular/material/input";
@@ -35,12 +34,12 @@ import {Observable} from "rxjs";
 })
 export class TasksListComponent implements OnInit{
 
-  @Input()
-  TaskList: List = {
+  @Input() TaskList: List = {
     id: 0,
     name: '',
     cardsCount: 0,
-    cards: []
+    cards: [],
+    boardId: 0
   };
   AvailableList : Observable<CardlessListModel[]> | undefined;
   ShowListEdit : boolean = false;
@@ -65,7 +64,7 @@ constructor(private listservice : ListService, public dialogService : DialogServ
   OnEditSubmit(){
 
     this.ShowListEdit = false;
-    this.listservice.EditListName( {name : this.NewListName},this.TaskList.id).subscribe({
+    this.listservice.EditListName( {name : this.NewListName, boardId : this.TaskList.boardId},this.TaskList.id).subscribe({
       next: () => {
         this.TaskList.name = this.NewListName;
         this.NewListName = this.TaskList.name;

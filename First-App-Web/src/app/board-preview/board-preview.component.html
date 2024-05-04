@@ -1,0 +1,39 @@
+ @if(!ShowEditForm){
+   <div class="card text-center board btn btn-light" style="width: 13rem; height:10rem" (click)="navigateBoard(board.id)" >
+  <div style="display:flex; justify-content:end; margin-top:10px; margin-right:10px">
+    <span ngbDropdown class="d-inline-block" (click)="$event.stopPropagation()">
+              <span style="cursor: pointer" class="dropdown-toggle" data-toggle="" ngbDropdownToggle>
+                <svg xmlns="http://www.w3.org/2000/svg"  width="16" height="16" fill="currentColor"  class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                 <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                </svg>
+              </span>
+            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+              <button ngbDropdownItem (click)="ShowEditForm=true"><i class="pi pi-pen-to-square"></i>   Edit</button>
+              <button ngbDropdownItem style="color:red" (click)="onDelete(board.id)"><i class="pi pi-trash"></i>   Delete</button>
+            </div>
+          </span>
+  </div>
+  <div style="display: flex; justify-content: center">
+    <div class="card-title" style="overflow-wrap:break-word;font-weight:bold; max-width:12rem">{{board.name}}</div>
+  </div>
+   </div>
+
+ }@else{
+  <div class="card text-center board" style="width: 13rem; height:10rem" >
+    <form #ngForm (ngSubmit)="EditBoard()" >
+      <div class="form-group">
+        <input type="text" name="boardName" #boardName="ngModel" class="form-control" [(ngModel)]="newBoardName" required maxlength="25" placeholder="Enter board name">
+        <div
+          *ngIf="boardName.invalid && (boardName.dirty || boardName.touched)" class=" alert-danger" style="color: red">
+          <div *ngIf="boardName.errors?.['required']">Board Name is required.</div>
+          <div *ngIf="boardName.errors?.['maxlength']">Name max size is 25 characters.</div>
+
+        </div>
+      </div>
+      <button *ngIf="ngForm.checkValidity()" class="btn btn-primary" type="submit">Save</button>
+      <button *ngIf="!ngForm.checkValidity()" class="btn btn-primary disabled" type="submit">Save</button>
+      <button class="btn btn-secondary" (click)="ShowEditForm = false">Cancel</button>
+
+    </form>
+  </div>
+ }

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ListService} from "../services/list.service";
 import {List} from "../models/list.model";
 import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
@@ -21,6 +21,7 @@ import {Observable} from "rxjs";
   styleUrl: './lists.component.css'
 })
 export class ListsComponent implements OnInit {
+  @Input()  boardId? : number;
   showCreateList : boolean = false;
   TasksList: Observable<List[]> | undefined
   CreateList : ListCreateModel;
@@ -28,17 +29,19 @@ export class ListsComponent implements OnInit {
 
   constructor(private listsService: ListService) {
     this.CreateList= {
-      name: ''
+      name: '',
+      boardId: 0
     }
   }
 
   ngOnInit(): void {
-    this.TasksList = this.listsService.GetLists();
+    this.TasksList = this.listsService.GetLists(this.boardId!);
     this.CreateForm = new FormGroup({
       listname: new FormControl(this.CreateList.name,[
         Validators.required,
         Validators.maxLength(100)])
     });
+    this.CreateList.boardId = this.boardId!;
   }
   OnSubmit(){
     console.log(this.CreateList)

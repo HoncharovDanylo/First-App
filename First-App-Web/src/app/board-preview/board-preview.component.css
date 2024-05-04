@@ -1,0 +1,15 @@
+.board{
+  margin-left:10px;
+  display: grid;
+  grid-template-rows: 33% 66%;
+
+  /*padding*/
+}
+.dropdown-toggle:after {
+  content: none !important;
+}
+.add-btn-custom{
+  text-align: center;
+  vertical-align: middle;
+  line-height: 8.5rem;
+}
