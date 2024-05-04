@@ -4,4 +4,5 @@ namespace Api.Models.DTOs.TaskListDTOs;
 public class CreateTaskListDto
 {
     public string Name { get; set; }
+    public int BoardId { get; set; }
 }

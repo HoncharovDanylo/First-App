@@ -24,7 +24,7 @@ namespace Api.Controllers
         [HttpGet("boards")]
         public async Task<IActionResult> GetBoards()
         {
-            var boards = (await _boardRepository.GetAll()).Select(x => new PreviewBoardDto()
+            var boards = (await _boardRepository.GetAll()).Select(x => new BoardDto()
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -45,28 +45,6 @@ namespace Api.Controllers
             {
                 Id = board.Id,
                 Name = board.Name,
-                TaskLists = board.TaskLists.Select(x => new TaskListDto()
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Cards = x.Cards.Select(x => new CardDto()
-                    {
-                        Id = x.Id,
-                        Title = x.Title,
-                        Description = x.Description,
-                        DueDate = x.DueDate,
-                        Priority = x.Priority,
-                    }).ToList()
-                }).ToList(),
-                Histories = board.Histories.Select(x => new HistoryDto()
-                {
-                    CardName = x.CardTitle,
-                    ListName = x.ListName,
-                    Action = x.Action,
-                    Field = x.Field,
-                    PreviousValue = x.PreviousValue,
-                    NewValue = x.NewValue
-                }).ToList()
             };
             return Ok(boardDto);
         }

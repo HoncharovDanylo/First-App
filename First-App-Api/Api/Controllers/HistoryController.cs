@@ -16,10 +16,10 @@ namespace Api.Controllers
             _historyRepository = historyRepository;
         }
 
-        [HttpGet("/history/{page}")]
-        public async Task<IActionResult> GetHistory(int page)
+        [HttpGet("/history/board/{boardId}/{page}")]
+        public async Task<IActionResult> GetHistoryByBoard(int boardId, int page)
         {
-            var history = (await _historyRepository.GetAll(page)).Select(x=>new HistoryDto()
+            var history = (await _historyRepository.GetByBoard(boardId,page)).Select(x=>new HistoryDto()
             {
                 Action = x.Action,
                 CardName = x.CardTitle,

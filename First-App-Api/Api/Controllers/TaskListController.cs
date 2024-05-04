@@ -21,10 +21,10 @@ namespace Api.Controllers
             _taskListRepository = taskListRepository;
         }
         
-        [HttpGet("/lists")]
-        public async Task<IActionResult> GetTaskLists()
+        [HttpGet("/lists/by-board/{boardId}")]
+        public async Task<IActionResult> GetTaskLists(int boardId)
         {
-            var taskLists = (await _taskListRepository.GetTaskLists()).Select(x => new TaskListDto()
+            var taskLists = (await _taskListRepository.GetTaskLists()).Where(x=>x.BoardId == boardId).Select(x => new TaskListDto()
             {
                 Id = x.Id,
                 Name = x.Name.Trim(),
@@ -38,7 +38,8 @@ namespace Api.Controllers
                     TaskListId = x.Id,
                     TaskListName = x.Name
                 }).OrderBy(x=>x.DueDate).ToList(),
-                CardsCount = x.Cards.Count
+                CardsCount = x.Cards.Count,
+                BoardId = x.BoardId
             });
             return Ok(taskLists);
         }
@@ -83,7 +84,8 @@ namespace Api.Controllers
                     DueDate = c.DueDate,
                     Priority = c.Priority
                 }).OrderBy(x=>x.DueDate).ToList(),
-                CardsCount = taskList.Cards.Count
+                CardsCount = taskList.Cards.Count,
+                BoardId = taskList.BoardId
             };
             return Ok(taskListDto);
         }
@@ -94,7 +96,8 @@ namespace Api.Controllers
             {
                 var taskList = new TaskList()
                 {
-                    Name = taskListDto.Name.Trim()
+                    Name = taskListDto.Name.Trim(),
+                    BoardId = taskListDto.BoardId
                 };
                 await _taskListRepository.Create(taskList);
                 return Ok();

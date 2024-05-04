@@ -1,0 +1,13 @@
+<div *ngIf="Board | async as board">
+<p-sidebar [(visible)]="this.sidebarVisible" position="right"  styleClass="md:w-30rem lg:w-30rem">
+  <ng-template pTemplate="header" >History</ng-template>
+  <ng-template pTemplate="content"><app-history-general [BoardId]="board.id"></app-history-general></ng-template>
+</p-sidebar>
+<div class="header-container">
+  <div><h2>{{board.name}}</h2></div>
+  <div style="align-self: flex-end"><button type="button" class="btn btn-outline-secondary" (click)="this.historyClick()">History</button></div>
+</div>
+<div class="lists-container">
+  <app-lists [boardId]="board.id" ></app-lists>
+</div>
+</div>

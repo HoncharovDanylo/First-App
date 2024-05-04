@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {HistoryModel} from "../models/History.model";
 import {HistoryService} from "../services/history.service";
 import {nextMonthDisabled} from "@ng-bootstrap/ng-bootstrap/datepicker/datepicker-tools";
@@ -19,6 +19,7 @@ import {DatePipe, NgForOf, NgIf} from "@angular/common";
   styleUrl: './history-general.component.css'
 })
 export class HistoryGeneralComponent implements OnInit{
+  @Input() BoardId : number = 0;
 page : number = 1;
 histories : HistoryModel[] =[];
 ShowMore : boolean = true;
@@ -28,7 +29,7 @@ constructor(public historyService : HistoryService) {}
     this.GetHistories();
   }
   GetHistories(){
-    this.historyService.getHistories(this.page++).subscribe({
+    this.historyService.getHistoriesByBoard(this.page++, this.BoardId).subscribe({
       next: (data) => {
         this.histories = this.histories.concat(data);
         this.ShowMore = data.length == 20;

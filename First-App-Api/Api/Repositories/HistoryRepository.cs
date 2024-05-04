@@ -14,9 +14,9 @@ public class HistoryRepository : IHistoryRepository
     {
         _dbContext = dbContext;
     }
-    public async Task<IEnumerable<History>> GetAll(int page)
+    public async Task<IEnumerable<History>> GetByBoard(int boardId,int page)
     {
-        return  (await _dbContext.Histories.OrderByDescending(x=>x.Timestamp).ToListAsync()).Skip((page-1) * 20).Take(20);
+        return  (await _dbContext.Histories.Where(x=>x.BoardId == boardId).OrderByDescending(x=>x.Timestamp).ToListAsync()).Skip((page-1) * 20).Take(20);
 
     }
 
