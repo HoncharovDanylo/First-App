@@ -13,8 +13,8 @@ export class ListService {
 
   constructor(private http  : HttpClient) {}
 
-  GetLists(): Observable<List[]> {
-    return this.http.get<List[]>(`${environment.apiUrl}/lists`);
+  GetLists(boardId : number): Observable<List[]> {
+    return this.http.get<List[]>(`${environment.apiUrl}/lists/by-board/${boardId}`);
   }
   GetList(id? : number): Observable<List> {
     return this.http.get<List>(`${environment.apiUrl}/lists/${id}`);
