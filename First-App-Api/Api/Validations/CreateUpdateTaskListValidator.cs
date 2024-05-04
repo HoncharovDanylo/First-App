@@ -8,5 +8,6 @@ public class CreateUpdateTaskListValidator : AbstractValidator<CreateTaskListDto
     public CreateUpdateTaskListValidator()
     {
         RuleFor(x => x.Name).NotEmpty().MaximumLength(50);
+        RuleFor(x => x.BoardId).NotEmpty();
     }
 }

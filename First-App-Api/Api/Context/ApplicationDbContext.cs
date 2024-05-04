@@ -24,12 +24,14 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Board>().Property(x => x.Name).IsRequired().HasMaxLength(50);
+        modelBuilder.Entity<Board>().Property(x => x.Name).IsRequired().HasMaxLength(25);
         modelBuilder.Entity<Board>().HasIndex(x => x.Name).IsUnique();
         
         modelBuilder.Entity<TaskList>().Property(x=>x.Name).HasMaxLength(50);
         modelBuilder.Entity<TaskList>().Property(x=>x.BoardId).IsRequired();
         modelBuilder.Entity<TaskList>().HasIndex(x => new { x.BoardId, x.Name }).IsUnique();
+
+        modelBuilder.Entity<History>().Property(x => x.BoardId).IsRequired();
         
         modelBuilder.Entity<Card>().Property(x=>x.Title).IsRequired().HasMaxLength(100);
         modelBuilder.Entity<Card>().Property(x=>x.Description).HasMaxLength(1000);
@@ -42,7 +44,10 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<TaskList>().HasOne(x => x.Board).WithMany(x => x.TaskLists).HasForeignKey(x => x.BoardId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        modelBuilder.Entity<History>().HasOne(x=>x.Board).WithMany(x=>x.Histories).HasForeignKey(x=>x.BoardId)
+        modelBuilder.Entity<Board>().HasMany(x=>x.Histories).WithOne(x=>x.Board).HasForeignKey(x=>x.BoardId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<History>().HasOne(x => x.Board).WithMany(x => x.Histories).HasForeignKey(x => x.BoardId)
             .OnDelete(DeleteBehavior.Cascade);
         // Data seeding
         var boards = new List<Board>()
@@ -86,16 +91,16 @@ public class ApplicationDbContext : DbContext
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
     {
         var histories = new List<History>();
-        foreach (var entry in ChangeTracker.Entries().Where(entry => entry.Entity is TaskList && entry.State == EntityState.Deleted))
-        {
-            var cards = entry.Navigation("Cards");
-            await cards.LoadAsync();
-            foreach (var card in (IEnumerable<Card>)cards.CurrentValue)
-            { 
-                histories.Add(_historyService.TrackDeletion(card, TaskLists.Find(card.TaskListId).Name, TaskLists.Find(card.TaskListId).BoardId));
-            }
-
-        }
+        // foreach (var entry in ChangeTracker.Entries().Where(entry => entry.Entity is TaskList && entry.State == EntityState.Deleted))
+        // {
+        //     var cards = entry.Navigation("Cards");
+        //     await cards.LoadAsync();
+        //     foreach (var card in (IEnumerable<Card>)cards.CurrentValue)
+        //     { 
+        //         histories.Add(_historyService.TrackDeletion(card, TaskLists.Find(card.TaskListId).Name, TaskLists.Find(card.TaskListId).BoardId));
+        //     }
+        //
+        // }
         
         foreach (var entry in ChangeTracker.Entries().Where(entry => entry.Entity is Card && entry.State == EntityState.Modified))
         {
@@ -112,14 +117,25 @@ public class ApplicationDbContext : DbContext
             histories.Add(_historyService.TrackDeletion((Card)entry.Entity, TaskLists.Find(((Card)entry.Entity).TaskListId).Name,TaskLists.Find(((Card)entry.Entity).TaskListId).BoardId));
         }
 
+     
         var addedEntries = ChangeTracker.Entries()
             .Where(entry => entry.Entity is Card && entry.State == EntityState.Added).ToList();
         
+        foreach (var  entry in ChangeTracker.Entries().Where(en=>en.Entity is Board && en.State == EntityState.Deleted))
+        {
+            var boardId = (entry.Entity as Board).Id;
+            histories.RemoveAll(x => x.BoardId == boardId);
+        }
         var saveChangesResult = await base.SaveChangesAsync(cancellationToken);
         foreach (var entry in addedEntries)
         {
             histories.Add(_historyService.TrackCreation((Card)entry.Entity,TaskLists.Find(((Card)entry.Entity).TaskListId).Name, TaskLists.Find(((Card)entry.Entity).TaskListId).BoardId ));
         }
+        
+        
+        
+
+        
         await Histories.AddRangeAsync(histories);
         var secondresult = await base.SaveChangesAsync(cancellationToken);
         return saveChangesResult & secondresult;

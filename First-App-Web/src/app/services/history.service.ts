@@ -11,8 +11,8 @@ export class HistoryService {
 
   constructor(private http : HttpClient) { }
 
-  getHistories(page : number): Observable<HistoryModel[]>{
-    return this.http.get<HistoryModel[]>(`${environment.apiUrl}/history/${page}`)
+  getHistoriesByBoard(page : number, boardId : number): Observable<HistoryModel[]>{
+    return this.http.get<HistoryModel[]>(`${environment.apiUrl}/history/board/${boardId}/${page}`)
   }
   getHistoryByCardId(cardId : number): Observable<HistoryModel[]>{
     return this.http.get<HistoryModel[]>(`${environment.apiUrl}/history/card/${cardId}`)

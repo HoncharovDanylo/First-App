@@ -5,11 +5,12 @@ import {ListsComponent} from "./lists/lists.component";
 import {MatDialog} from "@angular/material/dialog";
 import { SidebarModule } from 'primeng/sidebar';
 import {HistoryGeneralComponent} from "./history-general/history-general.component";
+import {ViewBoardsComponent} from "./view-boards/view-boards.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, TasksListComponent, ListsComponent, SidebarModule, HistoryGeneralComponent],
+  imports: [RouterOutlet, TasksListComponent, ListsComponent, SidebarModule, HistoryGeneralComponent, ViewBoardsComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

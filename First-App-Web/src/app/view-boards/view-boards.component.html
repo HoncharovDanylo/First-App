@@ -1,0 +1,40 @@
+<div class="header-container">
+  <div><h2>Your boards:</h2></div>
+</div>
+<hr>
+
+<div class="boards-section" style="margin:auto">
+  @for(board of Boards | async; track $index){
+    <app-board-preview [board]="board"></app-board-preview>
+  }
+<!--  <div class=" board btn btn-light" style="width: 13rem; height:10rem; border-style:dashed">-->
+<!--    <p class="add-btn-custom" style="font-weight:bold;"> + Add new board </p>-->
+<!--  </div>-->
+  @if(!ShowCreateForm)
+    {
+      <div class="card text-center board btn btn-light" style="width: 13rem; height:10rem" (click)="ShowCreateForm=true" >
+        <p class="add-btn-custom" style="font-weight:bold;overflow-wrap:break-word"  >+ Add new board </p>
+      </div>
+    }@else{
+      <div class="card text-center board" style="width: 13rem; height:10rem" >
+      <form #ngForm (ngSubmit)="CreateBoard()" >
+        <div class="form-group">
+          <input type="text" name="boardName" #boardName="ngModel" class="form-control" [(ngModel)]="newBoardName" required maxlength="25" placeholder="Enter board name">
+          <div
+            *ngIf="boardName.invalid && (boardName.dirty || boardName.touched)" class=" alert-danger" style="color: red">
+            <div *ngIf="boardName.errors?.['required']">Board Name is required.</div>
+            <div *ngIf="boardName.errors?.['maxlength']">Name max size is 25 characters.</div>
+
+          </div>
+        </div>
+        <button *ngIf="ngForm.checkValidity()" class="btn btn-primary" type="submit">Create</button>
+        <button *ngIf="!ngForm.checkValidity()" class="btn btn-primary disabled" type="submit">Create</button>
+        <button class="btn btn-secondary" (click)="ShowCreateForm = false">Cancel</button>
+
+      </form>
+      </div>
+
+    }
+  </div>
+<!--</div>-->
+<!--</div>-->
