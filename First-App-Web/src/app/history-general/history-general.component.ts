@@ -1,7 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {HistoryModel} from "../models/History.model";
+import {HistoryModel} from "../models/history/History.model";
 import {HistoryService} from "../services/history.service";
-import {nextMonthDisabled} from "@ng-bootstrap/ng-bootstrap/datepicker/datepicker-tools";
 import {ButtonModule} from "primeng/button";
 import {DatePipe, NgForOf, NgIf} from "@angular/common";
 

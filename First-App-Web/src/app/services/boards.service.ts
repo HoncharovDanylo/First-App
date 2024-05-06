@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
-import {BoardModel} from "../models/board.model";
+import {BoardModel} from "../models/board/board.model";
+import {CreateBoardModel} from "../models/board/create-board.model";
 
 @Injectable({
   providedIn: 'root'
@@ -20,11 +21,11 @@ export class BoardsService {
   deleteBoard(id : number) : Observable<void> {
    return this.http.delete<void>(`${environment.apiUrl}/boards/${id}`)
   }
-  createBoard(name : string) : Observable<BoardModel>{
-    return this.http.post<BoardModel>(`${environment.apiUrl}/boards/create`, {name : name})
+  createBoard(board : CreateBoardModel) : Observable<BoardModel>{
+    return this.http.post<BoardModel>(`${environment.apiUrl}/boards/create`, board)
   }
 
-  editBoard(id: number, newBoardName: string) {
-    return this.http.put<void>(`${environment.apiUrl}/boards/update/${id}`, {name: newBoardName})
+  editBoard(id: number, board : CreateBoardModel) {
+    return this.http.put<void>(`${environment.apiUrl}/boards/update/${id}`, board)
   }
 }

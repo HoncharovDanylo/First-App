@@ -13,7 +13,12 @@ public class CardRepository : ICardRepository
     {
         _dbContext = dbContext;
     }
-    
+
+
+    public async Task<IEnumerable<Card>> GetByBoardId(int boardId)
+    {
+        return  await _dbContext.Cards.Include(x=>x.TaskList).Where(x => x.TaskList.BoardId == boardId).ToListAsync();
+    }
 
     public async Task<Card?> GetById(int id)
     {

@@ -3,7 +3,7 @@
   <div class="list-header m-2" >
     <div class="m-0" style="overflow-wrap:break-word; max-width: 70%"><p class="m-0"  >{{TaskList.name}}</p></div>
     <div class="m-0">
-      <span style="margin-right: 5px">{{TaskList.cardsCount}}</span>
+      <span style="margin-right: 5px">{{CardsCount | async}}</span>
 
           <span ngbDropdown class="d-inline-block">
               <span style="cursor: pointer" class="dropdown-toggle" data-toggle="" ngbDropdownToggle>
@@ -42,8 +42,8 @@
   </div>
     <br>
   <div class="cards-list">
-    <div class="card mb-3" *ngFor="let card1 of TaskList?.cards">
-      <app-card (cardEdited)="listUpdateEvent.emit()" [Card]="card1" [MovementsList]="AvailableList"></app-card>
+    <div class="card mb-3" *ngFor="let card1 of Cards | async">
+      <app-card [Card]="card1" [MovementsList]="AvailableList" [boardId]="this.TaskList.boardId" ></app-card>
     </div>
 
   </div>
