@@ -1,8 +1,5 @@
-using Api.Context;
-using Api.Extensions;
 using Api.Interfaces;
 using Api.Models;
-using Api.Models.DTOs.CardDTOs;
 using Api.Models.DTOs.TaskListDTOs;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -28,42 +25,11 @@ namespace Api.Controllers
             {
                 Id = x.Id,
                 Name = x.Name.Trim(),
-                Cards = x.Cards.Select(c => new CardDto()
-                {
-                    Id = c.Id,
-                    Title = c.Title,
-                    Description = c.Description,
-                    DueDate = c.DueDate,
-                    Priority = c.Priority,
-                    TaskListId = x.Id,
-                    TaskListName = x.Name
-                }).OrderBy(x=>x.DueDate).ToList(),
-                CardsCount = x.Cards.Count,
                 BoardId = x.BoardId
             });
             return Ok(taskLists);
         }
-
-        [HttpGet("list/movements/{id:int}")]
-        public async Task<IActionResult> GetTaskListNames(int id)
-        {
-            var list = (await _taskListRepository.GetById(id));
-            var taskLists = (await _taskListRepository.GetTaskLists())
-                .Where(x=>x.Id != id && x.BoardId == list.BoardId)
-                .Select(x=> new CardlessTaskListDto() { Id = x.Id, Name = x.Name });
-            return Ok(taskLists);
-        }
         
-        [HttpGet("list/movements/all/{id:int}")]
-        public async Task<IActionResult> GetAllTaskListNames(int id)
-        {
-            var list = (await _taskListRepository.GetById(id));
-            var taskLists = (await _taskListRepository.GetTaskLists())
-                .Where(x=>x.BoardId == list.BoardId)
-                .Select(x=> new CardlessTaskListDto() { Id = x.Id, Name = x.Name }).ToList();
-            taskLists.MoveToFront(x => x.Id == id);
-            return Ok(taskLists);
-        }
         [HttpGet("/lists/{id}")]
         public async Task<IActionResult> GetTaskList(int? id)
         {
@@ -76,15 +42,6 @@ namespace Api.Controllers
             {
                 Id = taskList.Id,
                 Name = taskList.Name,
-                Cards = taskList.Cards.Select(c => new CardDto()
-                {
-                    Id = c.Id,
-                    Title = c.Title,
-                    Description = c.Description,
-                    DueDate = c.DueDate,
-                    Priority = c.Priority
-                }).OrderBy(x=>x.DueDate).ToList(),
-                CardsCount = taskList.Cards.Count,
                 BoardId = taskList.BoardId
             };
             return Ok(taskListDto);
@@ -100,7 +57,13 @@ namespace Api.Controllers
                     BoardId = taskListDto.BoardId
                 };
                 await _taskListRepository.Create(taskList);
-                return Ok();
+                var responseListDto = new TaskListDto()
+                {
+                    BoardId = taskList.BoardId,
+                    Id = taskList.Id,
+                    Name = taskList.Name
+                };
+                return Ok(responseListDto);
             }
             return BadRequest();
         }

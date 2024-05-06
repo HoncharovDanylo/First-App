@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Card} from "../models/card.model";
+import {Component, Input} from '@angular/core';
+import {CardModel} from "../models/card/card.model";
 import {AsyncPipe, DatePipe, NgForOf} from '@angular/common';
 import {
   NgbDropdown,
@@ -8,15 +8,14 @@ import {
   NgbDropdownMenu,
   NgbDropdownToggle
 } from "@ng-bootstrap/ng-bootstrap";
-import {ListService} from "../services/list.service";
-import {CardlessListModel} from "../models/cardless-list.model";
-import {CardService} from "../services/card.service";
-import {MatDialog} from "@angular/material/dialog";
 import {CardModalEditComponent} from "../card-modal-edit/card-modal-edit.component";
 import {DialogService, DynamicDialogRef} from "primeng/dynamicdialog";
 import {Observable} from "rxjs";
 import {CardModalComponent} from "../card-modal/card-modal.component";
-import {Element} from "@angular/compiler";
+import {ListModel} from "../models/tasklist/list.model";
+import {AppState} from "../../app.state";
+import {Store} from "@ngrx/store";
+import {CardsActions} from "../store/cards/cards-actions-type";
 
 @Component({
   selector: 'app-card',
@@ -36,54 +35,37 @@ import {Element} from "@angular/compiler";
   styleUrl: './card.component.css'
 })
 export class CardComponent {
- @Input() Card?: Card;
- @Input() MovementsList : Observable<CardlessListModel[]> | undefined;
- @Output() cardEdited = new EventEmitter<void>();
+ @Input() boardId!: number;
+ @Input() Card!: CardModel;
+ @Input() MovementsList! : Observable<ListModel[] | undefined>;
  editRef : DynamicDialogRef | undefined;
  infoRef : DynamicDialogRef | undefined;
 
- constructor(private cardService : CardService,public dialogService : DialogService) {
- }
+ constructor(public dialogService : DialogService, private store : Store<AppState>) {}
 
  ChangeList(listId : number){
-   this.cardService.MoveCard(this.Card?.id || 0,listId).subscribe({
-     next: () => {
-       this.cardEdited.emit();
-
-     },
-     error: (error) => {
-       console.log(error);
-     }
-   });
+    this.store.dispatch(CardsActions.MoveCard({
+      card : this.Card , listId :  listId}
+    ));
  }
  onDelete(){
-  this.cardService.DeleteCard(this.Card?.id || 0).subscribe({
-      next: () => {
-        this.cardEdited.emit();
-      },
-      error: (error) => {
-        console.log(error);
-      }
-    });
+   this.store.dispatch(CardsActions.DeleteCard({cardId : this.Card?.id}));
  }
  openEditCardDialog(){
    this.editRef = this.dialogService.open(CardModalEditComponent,{
       data: {
-        CardId : this.Card?.id,
+        Card : this.Card,
+        boardId : this.boardId,
       },
       header: 'Edit Card',
       styleClass : 'xl:w-6 lg:w-7 md:w-9 xs:max-w-screen, sm:max-w-screen dialog'
-
-
    })
-   this.editRef.onClose.subscribe(Result=>{
-     this.cardEdited.emit();
-   });
  }
  ShowCardModal(){
     this.infoRef = this.dialogService.open(CardModalComponent,{
       data: {
-        CardId : this.Card?.id,
+        Card : this.Card,
+        boardId : this.boardId,
       },
       header: 'Card info',
       contentStyle: {padding:'0'},
@@ -91,10 +73,7 @@ export class CardComponent {
     })
    this.infoRef.onClose.subscribe((res : boolean)=>{
      if (res)
-     {
-     this.openEditCardDialog();
-     }
+      this.openEditCardDialog();
    });
   }
-
 }
