@@ -24,7 +24,22 @@ namespace Api.Controllers
             _cardRepository = cardRepository;
             _taskListRepository = taskListRepository;
         }
-            
+        
+        [HttpGet("/cards/by-board/{boardId}")]
+        public async Task<IActionResult> GetCardsByBoard(int boardId)
+        {
+            var cards = (await _cardRepository.GetByBoardId(boardId)).Select(x => new CardDto()
+            {
+                Id = x.Id,
+                Title = x.Title,
+                Description = x.Description,
+                DueDate = x.DueDate,
+                TaskListName = x.TaskList.Name,
+                TaskListId = x.TaskList.Id,
+                Priority = x.Priority
+            });
+            return Ok(cards);
+        }
         
         [HttpGet("/cards/{id}")]       
         public async Task<IActionResult> GetCard(int? id)
@@ -60,8 +75,17 @@ namespace Api.Controllers
                     Priority = cardDto.Priority.Trim()
                 };
                 await _cardRepository.Create(card);
-                
-                return Ok();
+                var responseCardDto = new CardDto()
+                {
+                    Id = card.Id,
+                    Title = card.Title,
+                    Description = card.Description,
+                    DueDate = card.DueDate,
+                    TaskListName = card.TaskList.Name,
+                    TaskListId = card.TaskList.Id,
+                    Priority = card.Priority
+                };
+                return Ok(responseCardDto);
                 
             }
 
@@ -92,7 +116,7 @@ namespace Api.Controllers
                 await _cardRepository.Update(card);
                 return Ok();
             }
-            return BadRequest();
+            return BadRequest("valid error");
         }
         [HttpDelete("/cards/delete/{id}")]
         public async Task<IActionResult> DeleteCard(int? id)

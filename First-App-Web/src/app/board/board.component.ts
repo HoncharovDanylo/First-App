@@ -3,11 +3,13 @@ import {HistoryGeneralComponent} from "../history-general/history-general.compon
 import {ListsComponent} from "../lists/lists.component";
 import {SharedModule} from "primeng/api";
 import {SidebarModule} from "primeng/sidebar";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute} from "@angular/router";
 import {Observable} from "rxjs";
-import {BoardModel} from "../models/board.model";
-import {BoardsService} from "../services/boards.service";
+import {BoardModel} from "../models/board/board.model";
 import {AsyncPipe, NgIf} from "@angular/common";
+import {AppState} from "../../app.state";
+import {Store} from "@ngrx/store";
+import {selectBoardById} from "../store/boards/boards.selectors";
 
 @Component({
   selector: 'app-board',
@@ -25,24 +27,13 @@ import {AsyncPipe, NgIf} from "@angular/common";
 })
 export class BoardComponent implements OnInit{
   sidebarVisible = false
-  Board : Observable<BoardModel> | undefined;
-  constructor(private route : ActivatedRoute, private router: Router, private boardsService: BoardsService){
-  }
+  Board! : Observable<BoardModel | undefined>
+  constructor(private route : ActivatedRoute, private store : Store<AppState>){}
 
   ngOnInit(): void {
         let id = Number(this.route.snapshot.params['id'])
-        this.Board = this.boardsService.getBoardById(id);
-        // this.Board.subscribe({
-        //   next: (response) => {
-        //     console.log(response)
-        //   },
-        //   error: (error) => {
-        //     console.log(error)
-        //   }
-        //
-        // })
+        this.Board = this.store.select(selectBoardById(id))!
     }
-
   historyClick(){
     this.sidebarVisible = true
   }

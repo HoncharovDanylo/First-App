@@ -1,11 +1,15 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ListService} from "../services/list.service";
-import {List} from "../models/list.model";
+import { ListModel} from "../models/tasklist/list.model";
 import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {TasksListComponent} from "../tasks-list/tasks-list.component";
 import {FormControl, FormGroup, FormsModule, Validators} from "@angular/forms";
-import {ListCreateModel} from "../models/list-create.model";
+import {ListCreateModel} from "../models/tasklist/list-create.model";
 import {Observable} from "rxjs";
+import {Store} from "@ngrx/store";
+import {AppState} from "../../app.state";
+import {selectListsByBoard} from "../store/tasklists/tasklists.selectors";
+import {TaskListsActions} from "../store/tasklists/tasklists-actions-type";
 
 @Component({
   selector: 'app-lists',
@@ -23,11 +27,11 @@ import {Observable} from "rxjs";
 export class ListsComponent implements OnInit {
   @Input()  boardId? : number;
   showCreateList : boolean = false;
-  TasksList: Observable<List[]> | undefined
+  TasksList!: Observable<ListModel[] | undefined>
   CreateList : ListCreateModel;
   CreateForm? : FormGroup
 
-  constructor(private listsService: ListService) {
+  constructor( private store : Store<AppState>) {
     this.CreateList= {
       name: '',
       boardId: 0
@@ -35,7 +39,7 @@ export class ListsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.TasksList = this.listsService.GetLists(this.boardId!);
+    this.TasksList = this.store.select(selectListsByBoard(this.boardId!))
     this.CreateForm = new FormGroup({
       listname: new FormControl(this.CreateList.name,[
         Validators.required,
@@ -44,16 +48,8 @@ export class ListsComponent implements OnInit {
     this.CreateList.boardId = this.boardId!;
   }
   OnSubmit(){
-    console.log(this.CreateList)
-    this.listsService.CreateList(this.CreateList).subscribe({
-      next: (response) => {
-        this.OnCreateAction();
-        this.ngOnInit();
-      },
-      error: (error) => {
-        console.log(error);
-      }
-    });
+    this.store.dispatch(TaskListsActions.createTaskList(this.CreateList))
+    this.OnCreateAction();
   }
   OnCreateAction(){
     this.showCreateList = false;

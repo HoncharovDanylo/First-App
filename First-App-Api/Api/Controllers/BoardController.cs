@@ -55,7 +55,8 @@ namespace Api.Controllers
             {
                 var board = new Board() { Name = boardDto.Name.Trim() };
                 await _boardRepository.Create(board);
-                return Ok(); 
+                var responseBoardDto = new BoardDto() { Id = board.Id, Name = board.Name };
+                return Ok(responseBoardDto); 
             }
             return BadRequest("valid error");
         }

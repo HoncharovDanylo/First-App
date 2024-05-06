@@ -5,6 +5,7 @@ namespace Api.Interfaces;
 
 public interface ICardRepository
 {
+    Task<IEnumerable<Card>> GetByBoardId(int boardId);
     Task<Card?> GetById(int id);
     Task Create(Card card);
     Task Delete(Card card);

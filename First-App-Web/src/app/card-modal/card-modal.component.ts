@@ -1,10 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {HistoryService} from "../services/history.service";
-import {CardService} from "../services/card.service";
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {Observable} from "rxjs";
-import { Card } from '../models/card.model';
-import {HistoryModel} from "../models/History.model";
+import {CardModel} from '../models/card/card.model';
+import {HistoryModel} from "../models/history/History.model";
 import {ButtonModule} from "primeng/button";
 import {AsyncPipe, DatePipe, NgForOf, NgIf} from "@angular/common";
 import {CalendarModule} from "primeng/calendar";
@@ -31,16 +30,15 @@ import {PaginatorModule} from "primeng/paginator";
 })
 export class CardModalComponent implements OnInit{
 
-  Card : Observable<Card> | undefined;
+  Card! : CardModel;
   CardHistory : Observable<HistoryModel[]> | undefined;
 constructor(public historyService : HistoryService,
-            public cardService : CardService,
             public config : DynamicDialogConfig ,
             public ref: DynamicDialogRef<CardModalComponent>) {}
 
   ngOnInit(): void {
-    this.Card = this.cardService.GetCard(this.config.data.CardId);
-    this.CardHistory = this.historyService.getHistoryByCardId(this.config.data.CardId);
+    this.Card = this.config.data.Card;
+    this.CardHistory = this.historyService.getHistoryByCardId(this.config.data.Card.id);
     }
     onEdit(){
       this.ref.close(true)

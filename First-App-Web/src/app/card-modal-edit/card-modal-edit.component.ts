@@ -1,7 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {CardlessListModel} from "../models/cardless-list.model";
-import {ListService} from "../services/list.service";
-import {CardService} from "../services/card.service";
 import {FormsModule} from "@angular/forms";
 import {MatOption} from "@angular/material/autocomplete";
 import {MatFormField, MatLabel, MatSelect} from "@angular/material/select";
@@ -15,7 +12,14 @@ import {InputTextareaModule} from "primeng/inputtextarea";
 import {Observable} from "rxjs";
 import {AsyncPipe, NgIf} from "@angular/common";
 import {MessageModule} from "primeng/message";
-import {CreateCardModel} from "../models/create-card.mode";
+import {CreateCardModel} from "../models/card/create-card.model";
+import {AppState} from "../../app.state";
+import {Store} from "@ngrx/store";
+import {GetListsForMoveWithCurrent} from "../store/tasklists/tasklists.selectors";
+import {CardsActions} from "../store/cards/cards-actions-type";
+import {CardModel} from "../models/card/card.model";
+import {Update} from "@ngrx/entity";
+import {ListModel} from "../models/tasklist/list.model";
 
 @Component({
   selector: 'app-card-modal-edit',
@@ -42,7 +46,7 @@ import {CreateCardModel} from "../models/create-card.mode";
   styleUrl: './card-modal-edit.component.css'
 })
 export class CardModalEditComponent implements OnInit{
-  MovementsList : Observable<CardlessListModel[]> | undefined;
+  MovementsList : Observable<ListModel[]> | undefined;
   CardEdit : CreateCardModel={
     Title : '',
     Description : '',
@@ -53,39 +57,23 @@ export class CardModalEditComponent implements OnInit{
   priority : string ='';
   today = new Date();
   constructor(public dialogRef : DynamicDialogRef<CardModalEditComponent>,
-              public dialogConfig : DynamicDialogConfig,
-              private cardService : CardService, private listservice : ListService) {
+              public dialogConfig : DynamicDialogConfig, private store : Store<AppState>) {
   }
 
   ngOnInit(): void {
-   this.cardService.GetCard(this.dialogConfig.data.CardId).subscribe({
-    next: (value) => {
-      let date = new Date(value.dueDate);
-      this.CardEdit = {
-        Title : value.title,
-        Description : value.description,
-        DueDate : date,
-        Priority : value.priority,
-        TaskListId : value.taskListId
-      }
-      this.MovementsList =  this.listservice.GetAllListsForMove(value.taskListId);
-    },
-    error: (error) => {
-      console.log(error);
-    }
+      let card = this.dialogConfig.data.Card
+      this.CardEdit.Title = card.title;
+      this.CardEdit.Description = card.description;
+      this.CardEdit.DueDate = new Date(card.dueDate);
+      this.CardEdit.Priority = card.priority;
+      this.CardEdit.TaskListId = card.taskListId;
+      this.MovementsList =  this.store.select(GetListsForMoveWithCurrent(this.dialogConfig.data.boardId, this.dialogConfig.data.listId));
 
-  });
 
   }
   OnFormSubmit(){
-    this.cardService.EditCard(this.dialogConfig.data.CardId,this.CardEdit!).subscribe({
-      next: ()=>{
-        this.closeDialog()
-      },
-      error: (error)=> {
-        console.log(error);
-      }
-    });
+    this.store.dispatch(CardsActions.UpdateCard({update : this.CardEdit, id : this.dialogConfig.data.Card.id}))
+    this.dialogRef.close();
   }
   closeDialog(){
     this.dialogRef.close()

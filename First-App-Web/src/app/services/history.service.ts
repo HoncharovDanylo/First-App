@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
-import {HistoryModel} from "../models/History.model";
+import {HistoryModel} from "../models/history/History.model";
 
 @Injectable({
   providedIn: 'root'
