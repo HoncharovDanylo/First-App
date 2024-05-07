@@ -1,4 +1,5 @@
 using System.Collections;
+using Api.DataInitializers;
 using Api.Interfaces;
 using Api.Models;
 using Microsoft.AspNetCore.Components;
@@ -9,6 +10,11 @@ namespace Api.Context;
 public class ApplicationDbContext : DbContext
 {
     private readonly IHistoryService _historyService;
+
+    public ApplicationDbContext()
+    {
+        
+    }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHistoryService historyService) : base(options)
     {
         _historyService = historyService;
@@ -16,11 +22,11 @@ public class ApplicationDbContext : DbContext
         
     }
 
-    public DbSet<Card> Cards { get; set; }
-    public DbSet<TaskList> TaskLists { get; set; }
-    public DbSet<History> Histories { get; set; }
+    public virtual DbSet<Card> Cards { get; set; }
+    public virtual DbSet<TaskList> TaskLists { get; set; }
+    public virtual DbSet<History> Histories { get; set; }
     
-    public DbSet<Board?> Boards { get; set; }
+    public virtual DbSet<Board> Boards { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -49,34 +55,14 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<History>().HasOne(x => x.Board).WithMany(x => x.Histories).HasForeignKey(x => x.BoardId)
             .OnDelete(DeleteBehavior.Cascade);
-        // Data seeding
-        var boards = new List<Board>()
-        {
-            new Board() { Id = 1, Name = "Initial Board" }
-        };
-        var lists = new List<TaskList>()
-        {
-            new TaskList() { Id =1, Name = "To Do", BoardId = 1},
-            new TaskList() { Id =2, Name = "In progress", BoardId = 1},
-        };
-        var cards = new List<Card>()
-        {
-            new Card() { Id=1, Title = "Create structure", Description = "This is the first card", Priority = "Low", DueDate = DateOnly.Parse("2024-05-01"),TaskListId = 2 },
-            new Card() { Id=2, Title = "Setup Entity Framework", Description = "This is the second card", Priority = "High", DueDate = DateOnly.Parse("2024-05-10"),TaskListId = 2 },
-            new Card() { Id=3, Title = "Create models", Description = "This is the third card", Priority = "Medium", DueDate = DateOnly.Parse("2024-05-24"),TaskListId = 2 },
-            new Card() { Id=4, Title = "Develop controller for lists", Description = "This is the fourth card", Priority = "Medium", DueDate = DateOnly.Parse("2024-06-05"),TaskListId = 2 },
-            new Card() { Id=5, Title = "Implement validation", Description = "This is the fifth card", Priority = "Low", DueDate = DateOnly.Parse("2024-06-12"),TaskListId = 2 },
-            new Card() { Id=6, Title = "Create front-end", Description = "This is the sixth card", Priority = "Low", DueDate = DateOnly.Parse("2024-06-14"),TaskListId = 1 },
-            new Card() { Id=7, Title = "Test application", Description = "This is the seventh card", Priority = "High", DueDate = DateOnly.Parse("2024-06-19"),TaskListId = 1 },
-            new Card() { Id=8, Title = "BugFix", Description = "This is the eight card", Priority = "High", DueDate = DateOnly.Parse("2024-06-19"),TaskListId = 1 },
-            new Card() { Id=9, Title = "Containerize application", Description = "This is the ninths card", Priority = "Medium", DueDate = DateOnly.Parse("2024-06-23"),TaskListId = 1 },
-            new Card() { Id=10, Title = "Push into master branch", Description = "This is the tenth card", Priority = "Low", DueDate = DateOnly.Parse("2024-06-27"),TaskListId = 1 },
-        };
         var histories = new List<History>();
         var historyId = 1;
+        var cards = new CardsDataInitializer().Data;
+        var lists = new TaskListsDataInitializer().Data;
+        var boards = new BoardDataInitializer().Data;
         foreach (var card in cards)
         {
-            var hist = _historyService.TrackCreation(card, lists.Find(x=>x.Id == card.TaskListId).Name, lists.Find(x=>x.Id == card.TaskListId).BoardId);
+            var hist = _historyService.TrackCreation(card, lists.FirstOrDefault(x=>x.Id == card.TaskListId).Name, lists.FirstOrDefault(x=>x.Id == card.TaskListId).BoardId);
             hist.Id = historyId++;
             histories.Add(hist);
         }
@@ -91,17 +77,6 @@ public class ApplicationDbContext : DbContext
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
     {
         var histories = new List<History>();
-        // foreach (var entry in ChangeTracker.Entries().Where(entry => entry.Entity is TaskList && entry.State == EntityState.Deleted))
-        // {
-        //     var cards = entry.Navigation("Cards");
-        //     await cards.LoadAsync();
-        //     foreach (var card in (IEnumerable<Card>)cards.CurrentValue)
-        //     { 
-        //         histories.Add(_historyService.TrackDeletion(card, TaskLists.Find(card.TaskListId).Name, TaskLists.Find(card.TaskListId).BoardId));
-        //     }
-        //
-        // }
-        
         foreach (var entry in ChangeTracker.Entries().Where(entry => entry.Entity is Card && entry.State == EntityState.Modified))
         {
             var Originalvalues = entry.OriginalValues.Properties.ToDictionary(p => p.Name, p => entry.OriginalValues[p]);
@@ -116,11 +91,8 @@ public class ApplicationDbContext : DbContext
         {
             histories.Add(_historyService.TrackDeletion((Card)entry.Entity, TaskLists.Find(((Card)entry.Entity).TaskListId).Name,TaskLists.Find(((Card)entry.Entity).TaskListId).BoardId));
         }
-
-     
         var addedEntries = ChangeTracker.Entries()
             .Where(entry => entry.Entity is Card && entry.State == EntityState.Added).ToList();
-        
         foreach (var  entry in ChangeTracker.Entries().Where(en=>en.Entity is Board && en.State == EntityState.Deleted))
         {
             var boardId = (entry.Entity as Board).Id;
@@ -131,11 +103,6 @@ public class ApplicationDbContext : DbContext
         {
             histories.Add(_historyService.TrackCreation((Card)entry.Entity,TaskLists.Find(((Card)entry.Entity).TaskListId).Name, TaskLists.Find(((Card)entry.Entity).TaskListId).BoardId ));
         }
-        
-        
-        
-
-        
         await Histories.AddRangeAsync(histories);
         var secondresult = await base.SaveChangesAsync(cancellationToken);
         return saveChangesResult & secondresult;
