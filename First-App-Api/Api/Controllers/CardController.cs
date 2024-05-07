@@ -89,22 +89,21 @@ namespace Api.Controllers
                 
             }
 
-            return BadRequest("valid error");
+            return BadRequest("Validation error occured");
         }
 
         [HttpPut("/cards/update/{id}")]
-        public async Task<IActionResult> UpdateCard(int? id, [FromBody]CreateUpdateCardDto updateDto)
+        public async Task<IActionResult> UpdateCard(int id, [FromBody]CreateUpdateCardDto updateDto)
         {
-            if (id == null)
-                return BadRequest();
             if ((await _validator.ValidateAsync(updateDto)).IsValid)
             {
-                var card = await _cardRepository.GetById(id.Value); 
+                var card = await _cardRepository.GetById(id); 
                 var newList = await _taskListRepository.GetById(updateDto.TaskListId);
+                if (card == null || newList == null)
+                    return NotFound();
                 if (card.TaskList.BoardId != newList.BoardId)
                     return BadRequest();
-                if (card == null)
-                    return NotFound();
+               
                 
                 
                 card.Title = updateDto.Title.Trim();
@@ -134,10 +133,10 @@ namespace Api.Controllers
         {
             var card = await _cardRepository.GetById(cardId);
             var newList = await _taskListRepository.GetById(taskListId);
+            if(card == null || newList == null)
+                return NotFound();
             if (card.TaskList.BoardId != newList.BoardId)
                 return BadRequest();
-            if (card == null || newList == null)
-                return NotFound();
             card.TaskListId = taskListId;
             await _cardRepository.Update(card);
             return Ok();
