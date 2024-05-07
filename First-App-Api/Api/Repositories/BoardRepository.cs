@@ -16,14 +16,17 @@ public class BoardRepository : IBoardRepository
 
     public async Task<IEnumerable<Board?>> GetAll()
     {
-        return await _dbContext.Boards.ToListAsync();
+        return await Task.Run(() => _dbContext.Boards.ToList());
     }
 
     public async Task<Board?> GetById(int id)
     {
-        return await _dbContext.Boards.Include(x => x.TaskLists)
-            .ThenInclude(x => x.Cards)
-            .Include(x => x.Histories).FirstOrDefaultAsync(x => x.Id == id);
+        return await Task.Run(() =>
+        {
+            return _dbContext.Boards.Include(x => x.TaskLists)
+                .ThenInclude(x => x.Cards)
+                .Include(x => x.Histories).FirstOrDefault(x => x.Id == id);
+        });
     }
 
     public async Task Create(Board board)
@@ -34,7 +37,7 @@ public class BoardRepository : IBoardRepository
 
     public async Task Update(Board board)
     {
-        _dbContext.Entry(board).State = EntityState.Modified;
+        _dbContext.Boards.Update(board);
         await _dbContext.SaveChangesAsync();
     }
 
