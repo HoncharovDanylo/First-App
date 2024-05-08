@@ -29,18 +29,18 @@ import {PaginatorModule} from "primeng/paginator";
   styleUrl: './card-modal.component.css'
 })
 export class CardModalComponent implements OnInit{
-
+visible : boolean = true;
   Card! : CardModel;
   CardHistory : Observable<HistoryModel[]> | undefined;
-constructor(public historyService : HistoryService,
+constructor(
             public config : DynamicDialogConfig ,
-            public ref: DynamicDialogRef<CardModalComponent>) {}
+            public ref: DynamicDialogRef<CardModalComponent>,public historyService : HistoryService,) {}
 
   ngOnInit(): void {
-    this.Card = this.config.data.Card;
-    this.CardHistory = this.historyService.getHistoryByCardId(this.config.data.Card.id);
+    this.Card = this.config!.data.Card;
+    this.CardHistory = this.historyService!.getHistoryByCardId(this.config!.data.Card.id);
     }
     onEdit(){
-      this.ref.close(true)
+      this.ref!.close(true)
     }
 }

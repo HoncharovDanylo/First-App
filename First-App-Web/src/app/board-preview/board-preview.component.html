@@ -1,5 +1,5 @@
  @if(!ShowEditForm){
-   <div class="card text-center board btn btn-light" style="width: 13rem; height:10rem" (click)="navigateBoard(board.id)" >
+   <div class="card text-center board btn btn-light" style="width: 13rem; height:10rem" (click)="navigateBoard(board!.id)" >
   <div style="display:flex; justify-content:end; margin-top:10px; margin-right:10px">
     <span ngbDropdown class="d-inline-block" (click)="$event.stopPropagation()">
               <span style="cursor: pointer" class="dropdown-toggle" data-toggle="" ngbDropdownToggle>
@@ -9,12 +9,12 @@
               </span>
             <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
               <button ngbDropdownItem (click)="ShowEditForm=true"><i class="pi pi-pen-to-square"></i>   Edit</button>
-              <button ngbDropdownItem style="color:red" (click)="onDelete(board.id)" ><i class="pi pi-trash"></i>   Delete</button>
+              <button ngbDropdownItem style="color:red" (click)="onDelete(board!.id)" ><i class="pi pi-trash"></i>   Delete</button>
             </div>
           </span>
   </div>
   <div style="display: flex; justify-content: center">
-    <div class="card-title" style="overflow-wrap:break-word;font-weight:bold; max-width:12rem">{{board.name}}</div>
+    <div class="card-title" style="overflow-wrap:break-word;font-weight:bold; max-width:12rem">{{board!.name}}</div>
   </div>
    </div>
 

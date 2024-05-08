@@ -13,7 +13,7 @@ export const selectCardsState = createFeatureSelector<CardsState>('cards');
   export const selectCardsByList = (listId: number) => createSelector(
     selectAllCards,
     cards => {
-      return cards.filter(card => card.taskListId == listId)
+      return cards.filter(card => card.taskListId == listId).sort((a,b) =>(a.dueDate > b.dueDate) ? 1 : ((b.dueDate > a.dueDate) ? -1 : 0))
     });
 
   export const getCardById = (cardId: number) => createSelector(
