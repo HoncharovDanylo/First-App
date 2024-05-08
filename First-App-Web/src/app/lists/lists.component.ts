@@ -25,7 +25,7 @@ import {TaskListsActions} from "../store/tasklists/tasklists-actions-type";
   styleUrl: './lists.component.css'
 })
 export class ListsComponent implements OnInit {
-  @Input()  boardId? : number;
+  @Input()  boardId! : number;
   showCreateList : boolean = false;
   TasksList!: Observable<ListModel[] | undefined>
   CreateList : ListCreateModel;

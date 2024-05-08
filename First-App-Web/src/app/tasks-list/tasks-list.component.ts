@@ -37,7 +37,7 @@ import {GetListsForMove} from "../store/tasklists/tasklists.selectors";
   styleUrl: './tasks-list.component.css'
 })
 export class TasksListComponent implements OnInit{
-
+  @Input() ShowModals: boolean = true;
   @Input() TaskList: ListModel = {
     id: 0,
     name: '',
@@ -68,11 +68,14 @@ constructor( private store : Store<AppState>,public dialogService : DialogServic
     this.store.dispatch(TaskListsActions.deleteTaskList({listId : this.TaskList.id}));
   }
   openCreateCardDialog(){
+  if(this.ShowModals){
     this.ref = this.dialogService.open(CardModalCreateComponent, {
       data :{listId: this.TaskList.id, name: this.TaskList.name, boardId: this.TaskList.boardId},
       header: 'Create Card',
       styleClass: 'xl:w-6 lg:w-7 md:w-9 xs:max-w-screen, sm:max-w-screen dialog',
     });
+  }
+
   }
 
 }

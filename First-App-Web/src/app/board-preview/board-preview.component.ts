@@ -32,7 +32,7 @@ import {CreateBoardModel} from "../models/board/create-board.model";
   styleUrl: './board-preview.component.css'
 })
 export class BoardPreviewComponent implements OnInit{
-  @Input() board!: BoardModel;
+  @Input() board?: BoardModel;
   ShowEditForm: boolean = false;
   newBoardName: string = '';
   constructor(private router: Router, private store : Store<AppState>) {
@@ -53,7 +53,7 @@ export class BoardPreviewComponent implements OnInit{
     const update : CreateBoardModel= {
         name: this.newBoardName
     }
-    this.store.dispatch(BoardActions.boardUpdated({id : this.board.id, update}))
+    this.store.dispatch(BoardActions.boardUpdated({id : this.board!.id, update}))
     this.ShowEditForm = false;
   }
 }
