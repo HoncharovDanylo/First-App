@@ -1,3 +1,4 @@
+
 # First-App
 You can open deployed application via link https://list-app-web.azurewebsites.net/
 # Docker
@@ -16,6 +17,11 @@ then run the application in development mode
 ```sh
 ng serve
 ```
+To open Story book run the next command: 
+```sh
+npm run First-App-Web:storybook
+```
+
 # Starting Backend localy
 
 to run backend first thing you need to specify your connection string `DefaultConnection` to the database. You can do it in `First-App-Api\Api\appsettings.Development.json` if you want to run development mode with your own database
