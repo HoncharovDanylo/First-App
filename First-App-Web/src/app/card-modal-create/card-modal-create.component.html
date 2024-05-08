@@ -16,7 +16,7 @@
         </div>
       </div>
         <div>
-          <p-dropdown name="cardlist" [style]="{  width: '100%' }" appendTo="body" [options]="(MovementsList | async)!" [(ngModel)]="SelectedValue.TaskListId" #list="ngModel" optionLabel="name" dataKey="id" optionValue="id" required placeholder="Select a List"></p-dropdown>
+          <p-dropdown name="cardlist" [style]="{  width: '100%' }"  [options]="(MovementsList | async)!" [(ngModel)]="SelectedValue.TaskListId" #list="ngModel" optionLabel="name" dataKey="id" optionValue="id" required placeholder="Select a List"></p-dropdown>
           <div
             *ngIf="list.invalid && (list.dirty || list.touched)" class=" alert-danger" style="color: red; font-size:14px">
             <div *ngIf="title.errors?.['required']">List is required.</div>
@@ -40,7 +40,7 @@
           </div>
         </div>
         <div>
-          <p-dropdown id="cardpriority"   name="cardpriority" [options]="['Low','Medium','High']" appendTo="body" #priority="ngModel" [(ngModel)]="SelectedValue.Priority" required placeholder="Select a priority"></p-dropdown>
+          <p-dropdown id="cardpriority"   name="cardpriority" [options]="['Low','Medium','High']" #priority="ngModel" [(ngModel)]="SelectedValue.Priority" required placeholder="Select a priority"></p-dropdown>
           <div
             *ngIf="priority.invalid && (priority.dirty || priority.touched)" class=" alert-danger" style="color: red; font-size:14px">
             <div *ngIf="priority.errors?.['required']">Priority is required.</div>

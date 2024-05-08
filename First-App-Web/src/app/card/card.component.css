@@ -5,3 +5,6 @@
 .dropdown-toggle-settings:after {
   content: none !important;
 }
+.card{
+  max-width:270px
+}

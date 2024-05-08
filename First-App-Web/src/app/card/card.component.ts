@@ -35,11 +35,13 @@ import {CardsActions} from "../store/cards/cards-actions-type";
   styleUrl: './card.component.css'
 })
 export class CardComponent {
- @Input() boardId!: number;
- @Input() Card!: CardModel;
- @Input() MovementsList! : Observable<ListModel[] | undefined>;
- editRef : DynamicDialogRef | undefined;
- infoRef : DynamicDialogRef | undefined;
+
+  @Input() showModals: boolean = true;
+  @Input() boardId!: number;
+  @Input() Card!: CardModel;
+  @Input() MovementsList! : Observable<ListModel[] | undefined>;
+  editRef : DynamicDialogRef | undefined;
+  infoRef : DynamicDialogRef | undefined;
 
  constructor(public dialogService : DialogService, private store : Store<AppState>) {}
 
@@ -52,28 +54,34 @@ export class CardComponent {
    this.store.dispatch(CardsActions.DeleteCard({cardId : this.Card?.id}));
  }
  openEditCardDialog(){
-   this.editRef = this.dialogService.open(CardModalEditComponent,{
-      data: {
-        Card : this.Card,
-        boardId : this.boardId,
-      },
-      header: 'Edit Card',
-      styleClass : 'xl:w-6 lg:w-7 md:w-9 xs:max-w-screen, sm:max-w-screen dialog'
-   })
+   if (this.showModals){
+     this.editRef = this.dialogService.open(CardModalEditComponent,{
+       data: {
+         Card : this.Card,
+         boardId : this.boardId,
+       },
+       header: 'Edit Card',
+       styleClass : 'xl:w-6 lg:w-7 md:w-9 xs:max-w-screen, sm:max-w-screen dialog'
+     })
+   }
+
  }
  ShowCardModal(){
-    this.infoRef = this.dialogService.open(CardModalComponent,{
-      data: {
-        Card : this.Card,
-        boardId : this.boardId,
-      },
-      header: 'Card info',
-      contentStyle: {padding:'0'},
-      styleClass: 'card-modal xl:w-10 lg:w-10 md:w-10 xs:max-w-screen, sm:max-w-screen dialog'
-    })
-   this.infoRef.onClose.subscribe((res : boolean)=>{
-     if (res)
-      this.openEditCardDialog();
-   });
+   if (this.showModals){
+     this.infoRef = this.dialogService.open(CardModalComponent,{
+       data: {
+         Card : this.Card,
+         boardId : this.boardId,
+       },
+       header: 'Card info',
+       contentStyle: {padding:'0'},
+       styleClass: 'card-modal xl:w-10 lg:w-10 md:w-10 xs:max-w-screen, sm:max-w-screen dialog'
+     })
+     this.infoRef.onClose.subscribe((res : boolean)=>{
+       if (res)
+         this.openEditCardDialog();
+     });
+   }
+
   }
 }

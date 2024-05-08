@@ -1,7 +1,7 @@
 <div *ngIf="TasksList">
   <ol class="list-container">
     <li *ngFor="let list of TasksList | async" class="container-el">
-      <app-tasks-list (listUpdateEvent)="ngOnInit()" [TaskList]=list ></app-tasks-list>
+      <app-tasks-list  [TaskList]=list ></app-tasks-list>
     </li>
     <li class="container-el">
       <hr class="m-0">
